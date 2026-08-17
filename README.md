@@ -87,3 +87,16 @@ commita somente curso, referências e ferramentas; você cria os commits de
 `student/library-api/`.
 
 O estado e a próxima etapa estão registrados em `docs/progress.md`.
+
+## Encerrar e continuar depois
+
+Antes de fechar o projeto, gere uma verificação completa e confirme que todo o
+trabalho do curso está commitado:
+
+```bash
+.venv/bin/python scripts/resume_status.py --verify
+```
+
+Ao voltar, use o mesmo comando sem `--verify` para ver imediatamente o último
+commit e a próxima aula. O procedimento completo está em
+[`docs/resume.md`](docs/resume.md).

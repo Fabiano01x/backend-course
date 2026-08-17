@@ -107,3 +107,10 @@ visuais sem inserir CSS particular dentro das aulas.
 
 O manifesto `course/04-fastapi/module.json` é a fonte de verdade para ordem,
 metadados, proveniência, checkpoint e estado de cada aula.
+
+## ADR-014 — Retomada não depende da sessão aberta
+
+**Decisão:** Git, o manifesto do módulo, `progress.md` e os checkpoints são o
+estado durável do trabalho. `scripts/resume_status.py` deriva dessas fontes um
+resumo de retomada e pode reexecutar todas as verificações necessárias antes de
+uma pausa. Servidores locais e `dist/` são descartáveis.

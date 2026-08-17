@@ -101,3 +101,13 @@ Antes de alterar aulas ou arquitetura, consultar conforme a tarefa:
 5. Atualizar o mapa curricular quando a cobertura mudar.
 6. Conferir o diff, preparar somente caminhos do escopo e criar o commit
    obrigatório.
+
+## Interrupção e retomada
+
+- Antes de uma pausa solicitada, concluir ou reverter o marco atômico em
+  andamento; nunca deixar uma aula apresentada como concluída sem commit.
+- Executar `scripts/resume_status.py --verify` depois do último commit.
+- O ponto de retomada deriva do Git e de `course/04-fastapi/module.json`; não
+  depende de processos, terminais ou artefatos em `dist/` permanecerem abertos.
+- Se a área `student/` tiver mudanças, apenas informá-las separadamente. Não
+  prepará-las nem commitá-las.
