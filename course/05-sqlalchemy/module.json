@@ -1,0 +1,78 @@
+{
+  "module": 5,
+  "slug": "sqlalchemy",
+  "title": "SQLAlchemy — persistência da Library API",
+  "description": "Substitua o estado em memória por um modelo relacional, consultas assíncronas, migrações e transações verificáveis.",
+  "lessons": [
+    {
+      "number": 1,
+      "slug": "relational-schema",
+      "file": "01-relational-schema.md",
+      "title": "Do dicionário ao esquema relacional",
+      "summary": "Modele usuários, livros e empréstimos com chaves e restrições explícitas.",
+      "sources": ["source/module-05/01.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-01",
+      "status": "planned"
+    },
+    {
+      "number": 2,
+      "slug": "orm-models",
+      "file": "02-orm-models.md",
+      "title": "Modelos e relações com SQLAlchemy 2",
+      "summary": "Traduza o esquema para modelos tipados e represente Loan como entidade associativa.",
+      "sources": ["source/module-05/02.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-02",
+      "status": "planned"
+    },
+    {
+      "number": 3,
+      "slug": "async-database",
+      "file": "03-async-database.md",
+      "title": "Sessões assíncronas e PostgreSQL",
+      "summary": "Configure engine, fábrica e uma sessão isolada por requisição.",
+      "sources": ["source/module-05/03.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-03",
+      "status": "planned"
+    },
+    {
+      "number": 4,
+      "slug": "orm-crud",
+      "file": "04-orm-crud.md",
+      "title": "CRUD persistente sem esconder o ORM",
+      "summary": "Troque os dicionários por consultas SQLAlchemy e complete o ciclo HTTP de livros.",
+      "sources": ["source/module-05/04.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-04",
+      "status": "planned"
+    },
+    {
+      "number": 5,
+      "slug": "alembic",
+      "file": "05-alembic.md",
+      "title": "Evoluindo o esquema com Alembic",
+      "summary": "Versione e revise mudanças do banco sem depender de create_all.",
+      "sources": ["source/module-05/05.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-05",
+      "status": "planned"
+    },
+    {
+      "number": 6,
+      "slug": "atomic-loans",
+      "file": "06-atomic-loans.md",
+      "title": "Empréstimos atômicos e fronteiras de transação",
+      "summary": "Crie empréstimos sem deixar livro e histórico em estados divergentes.",
+      "sources": ["source/module-05/04.md", "source/module-05/06.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-06",
+      "status": "planned"
+    },
+    {
+      "number": 7,
+      "slug": "relationship-loading",
+      "file": "07-relationship-loading.md",
+      "title": "Consultas previsíveis sem N+1",
+      "summary": "Carregue relações explicitamente e proteja o custo das leituras.",
+      "sources": ["source/module-05/07.md"],
+      "checkpoint": "reference/checkpoints/module-05/lesson-07",
+      "status": "planned"
+    }
+  ]
+}

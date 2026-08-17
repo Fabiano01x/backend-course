@@ -1,6 +1,6 @@
 # Progresso
 
-Estado: Módulo 4 concluído
+Estado: Módulo 5 planejado
 
 Última aula processada: 08
 
@@ -9,6 +9,8 @@ Estado: Módulo 4 concluído
 - Curso e versão confirmados: `3b30bbfd-e48e-4883-8450-8fca5452c8d1`, v3.
 - Módulo 4 importado integralmente: 8 JSON, 8 Markdown e manifesto com hashes.
 - As oito aulas foram analisadas e rastreadas no mapa curricular.
+- Módulo 5 importado integralmente: 7 JSON, 7 Markdown e manifesto com hashes.
+- As sete novas aulas foram analisadas e rastreadas no mapa curricular.
 
 ## Conteúdo autoral
 
@@ -18,6 +20,7 @@ Estado: Módulo 4 concluído
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
+- Sequência autoral do Módulo 5 definida; nenhuma aula foi iniciada.
 
 ## Conceitos incorporados
 
@@ -68,10 +71,12 @@ Estado: Módulo 4 concluído
 
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
-- Manter PDF, SQLAlchemy, autenticação e Docker fora deste marco.
-- Não iniciar o Módulo 5 sem definir seu escopo e mapear suas fontes.
+- Manter PDF e autenticação fora deste módulo; Docker entra somente quando a
+  necessidade de executar PostgreSQL localmente aparecer na aula 3.
+- Generalizar validador, retomada e gerador para mais de um módulo antes da
+  primeira aula do Módulo 5.
 
 ## Próxima etapa
 
-O Módulo 4 está concluído. O próximo problema visível é substituir o estado em
-memória por persistência relacional; isso pertence ao planejamento do Módulo 5.
+Generalizar as ferramentas do curso para validar e retomar múltiplos módulos.
+Depois, produzir a Aula 1 do Módulo 5 a partir do checkpoint final do Módulo 4.

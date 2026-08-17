@@ -172,3 +172,17 @@ sucesso e erros reais são protegidos por testes.
 Informações fictícias de contato ou licença e uma rota artificial marcada como
 obsoleta não foram copiadas da fonte. `deprecated=True` será usado somente
 quando existir uma substituição e um plano real de migração.
+
+## ADR-020 — Módulo 5 introduz persistência em sete problemas
+
+**Decisão:** as sete aulas originais foram preservadas na cobertura, mas
+adaptadas à Library API. A sequência parte do esquema, passa pelos modelos,
+conexão, CRUD e migrações, e somente então introduz fronteiras de serviço e
+repository no caso de uso atômico de empréstimo. Otimização de relacionamentos
+encerra o módulo quando as consultas relacionadas realmente existirem.
+
+O curso usará a API tipada do SQLAlchemy 2 (`DeclarativeBase`, `Mapped`,
+`mapped_column`, `async_sessionmaker` e `select`). Senhas com caracteres
+especiais não serão interpoladas ingenuamente em URLs. `create_all` não será
+tratado como migração, autogenerate sempre exigirá revisão e I/O implícito de
+relacionamentos não será assumido seguro com `AsyncSession`.

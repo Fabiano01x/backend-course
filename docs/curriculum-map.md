@@ -37,3 +37,29 @@ as decisões de implementação são reorganização pedagógica deste projeto.
 
 As aulas são concluídas sequencialmente. O status de cada linha distingue
 conteúdo produzido de planejamento aprovado.
+
+## Módulo 5 — Database Modeling with SQLAlchemy
+
+- Fonte importada integralmente: 7 aulas da versão 3.
+- Projeto cumulativo preservado: a Library API substitui gradualmente o estado
+  em memória por PostgreSQL.
+
+| Ordem original | Aula original | Fonte | Conceitos identificados | Nova posição | Nova aula | Status | Justificativa |
+|---:|---|---|---|---:|---|---|---|
+| 1 | Database Schema Design for Full-Stack Applications | `source/module-05/01.md` | normalização, entidades, chaves, restrições, integridade referencial | 1 | Do dicionário ao esquema relacional | Analisado e adaptado | O exemplo de plataforma de cursos cede lugar a `users`, `books` e `loans`; o esquema nasce do problema de perda de estado da Library API. |
+| 2 | SQLAlchemy Models & Relationships | `source/module-05/02.md` | `DeclarativeBase`, `Mapped`, `mapped_column`, `ForeignKey`, relacionamentos | 2 | Modelos e relações com SQLAlchemy 2 | Analisado e complementado | `Loan` será uma entidade associativa, pois a relação possui datas e estado próprios; uma tabela `secondary` simples perderia esses atributos. |
+| 3 | FastAPI & SQLAlchemy: PostgreSQL Integration | `source/module-05/03.md` | engine assíncrona, `AsyncSession`, DI, PostgreSQL, Docker, lifespan | 3 | Sessões assíncronas e PostgreSQL | Analisado e corrigido | Usaremos `async_sessionmaker`, configuração validada e URL segura. `create_all` será somente uma ponte temporária e sairá quando Alembic entrar. |
+| 4 | ORM CRUD Operations | `source/module-05/04.md` | `select`, create/read/update/delete, schemas, repository, service | 4 e 6 | CRUD persistente; Empréstimos atômicos | Analisado e dividido | O ORM aparece diretamente nos routers primeiro. Repository e service só entram quando o caso de empréstimo exigir coordenação e fronteira transacional. |
+| 5 | Alembic Migrations: Managing Database Schema Changes | `source/module-05/05.md` | revisões, `upgrade`, `downgrade`, autogenerate, `target_metadata` | 5 | Evoluindo o esquema com Alembic | Analisado e corrigido | Autogenerate produz uma migração candidata que deve ser revisada; a aplicação deixa de criar tabelas no startup. |
+| 6 | Atomic Writes with Database Transactions | `source/module-05/06.md` | ACID, commit, rollback, Unit of Work, fronteiras transacionais | 6 | Empréstimos atômicos e fronteiras de transação | Analisado e integrado | A transação responde ao caso real: criar o histórico e tornar o livro indisponível juntos. `AsyncSession` fornece a unidade de trabalho sem uma classe genérica prematura. |
+| 7 | Optimizing Relationship Loading for N+1 Query Prevention | `source/module-05/07.md` | lazy loading, N+1, `selectinload`, `joinedload`, `lazy="raise"` | 7 | Consultas previsíveis sem N+1 | Analisado e corrigido | Em código assíncrono, I/O implícito também pode falhar; as relações serão carregadas explicitamente e o número de consultas será testado. |
+
+### Sequência planejada
+
+1. Do dicionário ao esquema relacional.
+2. Modelos e relações com SQLAlchemy 2.
+3. Sessões assíncronas e PostgreSQL.
+4. CRUD persistente sem esconder o ORM.
+5. Evoluindo o esquema com Alembic.
+6. Empréstimos atômicos e fronteiras de transação.
+7. Consultas previsíveis sem N+1.

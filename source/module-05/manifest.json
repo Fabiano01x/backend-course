@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "course_id": "3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "course_title": "Python full stack for MNCs",
+  "version_number": 3,
+  "module_number": 5,
+  "module_title": "Database Modeling with SQLAlchemy",
+  "course_api_url": "https://paths.grasp.study/api/goals/3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "imported_at": "2026-08-17T21:40:52.505600+00:00",
+  "markdown_derivation": "verbatim lesson.content with one trailing newline",
+  "lessons": [
+    {
+      "position": 1,
+      "lesson_id": "4bc84ee5-d6ac-4432-b375-f01c360a50c1",
+      "title": "Database Schema Design for Full-Stack Applications",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/4bc84ee5-d6ac-4432-b375-f01c360a50c1",
+      "json_file": "01.json",
+      "json_sha256": "8ad443c2383a79651a1442f595f2423fdb03e1092c75111f1bbaf7d1d81d2689",
+      "markdown_file": "01.md",
+      "markdown_sha256": "45c6960dc9448f983d9abd83d1113c5b604950dfbe29627628a3eab119c14061"
+    },
+    {
+      "position": 2,
+      "lesson_id": "db7de295-5bf5-4d82-ab08-6c99bf675dc8",
+      "title": "SQLAlchemy Models & Relationships",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/db7de295-5bf5-4d82-ab08-6c99bf675dc8",
+      "json_file": "02.json",
+      "json_sha256": "1dd539adeeb0738ec2c2ce87c551e241028f8cd010cce895bf89e4d6601abf55",
+      "markdown_file": "02.md",
+      "markdown_sha256": "f246af926a6575bf1937fd9a6428832be18bda3f0ae65d8cab98e535a920f899"
+    },
+    {
+      "position": 3,
+      "lesson_id": "3874183a-5adb-4222-beab-b2eccec48179",
+      "title": "FastAPI & SQLAlchemy: PostgreSQL Integration",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/3874183a-5adb-4222-beab-b2eccec48179",
+      "json_file": "03.json",
+      "json_sha256": "7e5b8829369a17dcb2b5b7ee986322e26c886c82b095b68abbefdc54b009967a",
+      "markdown_file": "03.md",
+      "markdown_sha256": "2126f0a56b1523781cc1e96995caef349b98f7f855a3eff20806430a93d7e806"
+    },
+    {
+      "position": 4,
+      "lesson_id": "882db6b4-7a4f-4add-b988-63757cddb2df",
+      "title": "ORM CRUD Operations",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/882db6b4-7a4f-4add-b988-63757cddb2df",
+      "json_file": "04.json",
+      "json_sha256": "9e27abf01a35a7b96d362d60c6f54c3832924dcb1892efcf202038e426579fa3",
+      "markdown_file": "04.md",
+      "markdown_sha256": "b25884ea37756b7c1eb9dff64025bec1df5a2d98579b97148a02ff6a5ace15df"
+    },
+    {
+      "position": 5,
+      "lesson_id": "bd9681c3-023a-4f92-988e-c126c4b8b408",
+      "title": "Alembic Migrations: Managing Database Schema Changes",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/bd9681c3-023a-4f92-988e-c126c4b8b408",
+      "json_file": "05.json",
+      "json_sha256": "e89a766bc362e1dd1d0330f608669cdd9ddb8760011e6540649731149c35c2f3",
+      "markdown_file": "05.md",
+      "markdown_sha256": "16c456fbf9d297b75298633d11d410c3877005cd894e11223245a1c9d10eed2b"
+    },
+    {
+      "position": 6,
+      "lesson_id": "a39a9547-3286-49fb-b7be-4eff13914115",
+      "title": "Atomic Writes with Database Transactions",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/a39a9547-3286-49fb-b7be-4eff13914115",
+      "json_file": "06.json",
+      "json_sha256": "58fd09b30de3983807215199d72aba2c25583d2b3a9127792ab8d437ff0a60fe",
+      "markdown_file": "06.md",
+      "markdown_sha256": "3258f34b7e2bb71d656b1cf645aeca20482c0066bf3ca0559d51156fda23cc92"
+    },
+    {
+      "position": 7,
+      "lesson_id": "7723b135-0e67-42f8-8c1b-b10e26f3cd9a",
+      "title": "Optimizing Relationship Loading for N+1 Query Prevention",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/7723b135-0e67-42f8-8c1b-b10e26f3cd9a",
+      "json_file": "07.json",
+      "json_sha256": "8734175a08a99a833bb2b2b16516dc4c59bdeb8c598e30a57e345dbb3b61bccf",
+      "markdown_file": "07.md",
+      "markdown_sha256": "8b8785716ee96ea3056fe314389b000ec29fb8af9f496a2327b92f8a89c2654b"
+    }
+  ]
+}
