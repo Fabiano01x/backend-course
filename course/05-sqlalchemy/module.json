@@ -22,7 +22,7 @@
       "summary": "Traduza o esquema para modelos tipados e represente Loan como entidade associativa.",
       "sources": ["source/module-05/02.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-02",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 3,

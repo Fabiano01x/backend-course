@@ -170,3 +170,16 @@ concluídas.
   para o mesmo livro.
 - Autores ainda não são entidades porque não possuem ciclo de vida próprio no
   escopo atual.
+
+## Modelos SQLAlchemy 2
+
+- Introduzido: Módulo 5 / aula 2.
+- `Base` herda de `DeclarativeBase` e concentra o metadata de `users`, `books`
+  e `loans`.
+- Colunas usam `Mapped`, `mapped_column` e tipos explícitos do SQLAlchemy 2.
+- `ForeignKey` expressa integridade no banco; `relationship` oferece navegação
+  bidirecional entre objetos.
+- `Loan` usa association object porque a relação possui `borrowed_at`, `due_at`
+  e `returned_at`.
+- O metadata preserva constraints nomeadas e o índice parcial PostgreSQL.
+- Engine, sessão e consultas continuam adiadas para a próxima necessidade.

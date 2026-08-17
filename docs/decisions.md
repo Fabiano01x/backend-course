@@ -197,3 +197,13 @@ por livro.
 O campo `available` permanece no contrato HTTP e será calculado pela consulta.
 Isso evita duas fontes de verdade. `Loan` é uma entidade associativa, e não uma
 tabela `secondary` simples, porque possui datas e histórico próprios.
+
+## ADR-022 — ORM mapeia o esquema antes de conectar
+
+**Decisão:** M05/A02 adiciona somente modelos e SQLAlchemy 2.0.51. A compilação
+do metadata com o dialeto PostgreSQL prova tipos, constraints, chaves e o
+índice parcial sem criar engine ou sessão.
+
+Schemas Pydantic permanecem contratos HTTP separados. `Loan` é um association
+object completo; não usamos `secondary` porque a associação possui atributos.
+Estratégias de carregamento também não são antecipadas nesta aula.

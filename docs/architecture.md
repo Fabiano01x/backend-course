@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A01
+## Estado sequencial atual: checkpoint M05/A02
 
 ```text
 Cliente HTTP
@@ -53,7 +53,7 @@ defaults + .env + variáveis do processo
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-01/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-05/lesson-02/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos e `data.py` guarda estado temporário
@@ -74,9 +74,10 @@ identificadores estáveis das operações, schemas Pydantic e respostas adiciona
 Testes consultam `/openapi.json` para proteger esse contrato; Swagger UI e
 ReDoc apenas o apresentam de formas diferentes.
 
-`schema.sql` registra o próximo estado de dados sem antecipar a conexão: as
-tabelas `users`, `books` e `loans`, suas chaves e constraints. A API ainda usa
-as coleções em memória; os modelos SQLAlchemy entram na aula seguinte.
+`schema.sql` registra o desenho de dados. `app/models.py` traduz `users`,
+`books` e `loans` para metadata SQLAlchemy tipado, incluindo a entidade
+associativa `Loan`. A API ainda usa as coleções em memória; engine e sessão
+entram na aula seguinte.
 
 ## Separação pedagógica
 
@@ -109,7 +110,8 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   processos. Ele torna visível o problema que motivará o módulo de banco.
 - Paginação por offset sobre uma coleção mutável não oferece snapshot estável;
   esse limite é explícito até a introdução do banco.
-- Ainda não existem service layer, repository, ORM, migrations ou transações.
+- Ainda não existem service layer, repository, engine, sessão, migrations ou
+  transações. O ORM mapeia apenas a estrutura nesta etapa.
 - `Loan` já faz parte do esquema conceitual, mas ainda não possui rota nem
   modelo Python.
 - As funções são `async` para preservar o caminho pedagógico, mas o estado
