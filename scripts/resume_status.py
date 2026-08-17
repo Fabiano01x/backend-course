@@ -26,15 +26,28 @@ def run_git(root: Path, *arguments: str) -> str:
     return result.stdout.strip()
 
 
-def load_lessons(root: Path) -> list[dict[str, Any]]:
-    manifest = root / "course" / "04-fastapi" / "module.json"
-    payload = json.loads(manifest.read_text(encoding="utf-8"))
-    return payload["lessons"]
+def load_modules(root: Path) -> list[dict[str, Any]]:
+    modules: list[dict[str, Any]] = []
+    for manifest in sorted((root / "course").glob("[0-9][0-9]-*/module.json")):
+        payload = json.loads(manifest.read_text(encoding="utf-8"))
+        modules.append(payload)
+    if not modules:
+        raise FileNotFoundError("nenhum manifesto autoral encontrado")
+    return modules
 
 
-def progress_summary(lessons: list[dict[str, Any]]) -> tuple[list[int], dict[str, Any] | None]:
-    completed = [int(lesson["number"]) for lesson in lessons if lesson["status"] == "complete"]
-    next_lesson = next((lesson for lesson in lessons if lesson["status"] != "complete"), None)
+def progress_summary(
+    modules: list[dict[str, Any]],
+) -> tuple[list[tuple[int, int]], tuple[int, dict[str, Any]] | None]:
+    completed: list[tuple[int, int]] = []
+    next_lesson: tuple[int, dict[str, Any]] | None = None
+    for module in sorted(modules, key=lambda item: int(item["module"])):
+        module_number = int(module["module"])
+        for lesson in module["lessons"]:
+            if lesson["status"] == "complete":
+                completed.append((module_number, int(lesson["number"])))
+            elif next_lesson is None:
+                next_lesson = (module_number, lesson)
     return completed, next_lesson
 
 
@@ -48,36 +61,48 @@ def classify_changes(status_lines: list[str]) -> tuple[list[str], list[str]]:
     return course_changes, student_changes
 
 
-def verification_commands(root: Path, completed: list[int]) -> list[tuple[str, list[str], dict[str, str]]]:
+def verification_commands(
+    root: Path, completed: list[tuple[int, int]]
+) -> list[tuple[str, list[str], dict[str, str]]]:
     python = sys.executable
     commands: list[tuple[str, list[str], dict[str, str]]] = [
         ("Testes das ferramentas", [python, "-m", "pytest", "-q", "tests"], {}),
         ("Validação curricular", [python, "scripts/validate_course.py"], {}),
     ]
     if completed:
-        latest = completed[-1]
-        checkpoint = f"reference/checkpoints/module-04/lesson-{latest:02d}"
+        latest_module, latest_lesson = completed[-1]
+        checkpoint = (
+            f"reference/checkpoints/module-{latest_module:02d}/"
+            f"lesson-{latest_lesson:02d}"
+        )
         environment = os.environ.copy()
         environment["PYTHONPATH"] = str(root / checkpoint)
         commands.append(
             (
-                f"Checkpoint {latest:02d}",
+                f"Checkpoint M{latest_module:02d}/A{latest_lesson:02d}",
                 [python, "-m", "pytest", "-q", f"{checkpoint}/tests"],
                 environment,
             )
         )
-        for lesson in completed:
+        for module, lesson in completed:
             commands.append(
                 (
-                    f"HTML da aula {lesson:02d}",
-                    [python, "scripts/build_course.py", "--module", "4", "--lesson", str(lesson)],
+                    f"HTML M{module:02d}/A{lesson:02d}",
+                    [
+                        python,
+                        "scripts/build_course.py",
+                        "--module",
+                        str(module),
+                        "--lesson",
+                        str(lesson),
+                    ],
                     {},
                 )
             )
     return commands
 
 
-def verify(root: Path, completed: list[int]) -> bool:
+def verify(root: Path, completed: list[tuple[int, int]]) -> bool:
     for label, command, environment in verification_commands(root, completed):
         print(f"\n[{label}]")
         result = subprocess.run(command, cwd=root, env=environment or None, check=False)
@@ -99,8 +124,8 @@ def main() -> int:
     root = arguments.root.resolve()
 
     try:
-        lessons = load_lessons(root)
-        completed, next_lesson = progress_summary(lessons)
+        modules = load_modules(root)
+        completed, next_lesson = progress_summary(modules)
         branch = run_git(root, "branch", "--show-current")
         last_commit = run_git(root, "log", "-1", "--pretty=%h %s")
         status = run_git(root, "status", "--porcelain").splitlines()
@@ -111,14 +136,18 @@ def main() -> int:
     print("Backend Course — ponto de retomada")
     print(f"Branch: {branch}")
     print(f"Último commit: {last_commit}")
-    print(f"Aulas concluídas: {', '.join(f'{item:02d}' for item in completed) or 'nenhuma'}")
+    completed_label = ", ".join(
+        f"M{module:02d}/A{lesson:02d}" for module, lesson in completed
+    )
+    print(f"Aulas concluídas: {completed_label or 'nenhuma'}")
     if next_lesson is None:
-        print("Próxima etapa: Módulo 4 concluído")
+        print("Próxima etapa: todos os módulos planejados estão concluídos")
     else:
-        suffix = " (substituir o piloto)" if next_lesson["status"] == "pilot" else ""
+        module_number, lesson = next_lesson
+        suffix = " (substituir o piloto)" if lesson["status"] == "pilot" else ""
         print(
-            f"Próxima etapa: aula {int(next_lesson['number']):02d} — "
-            f"{next_lesson['title']}{suffix}"
+            f"Próxima etapa: M{module_number:02d}/A{int(lesson['number']):02d} — "
+            f"{lesson['title']}{suffix}"
         )
 
     if arguments.verify and not verify(root, completed):

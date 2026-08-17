@@ -13,17 +13,41 @@ SPEC.loader.exec_module(resume_status)
 
 
 def test_progress_summary_finds_first_unfinished_lesson() -> None:
-    lessons = [
-        {"number": 1, "status": "complete", "title": "One"},
-        {"number": 2, "status": "complete", "title": "Two"},
-        {"number": 3, "status": "pilot", "title": "Three"},
-        {"number": 4, "status": "planned", "title": "Four"},
+    modules = [
+        {
+            "module": 4,
+            "lessons": [
+                {"number": 1, "status": "complete", "title": "One"},
+                {"number": 2, "status": "complete", "title": "Two"},
+            ],
+        },
+        {
+            "module": 5,
+            "lessons": [
+                {"number": 1, "status": "pilot", "title": "Three"},
+                {"number": 2, "status": "planned", "title": "Four"},
+            ],
+        },
     ]
 
-    completed, next_lesson = resume_status.progress_summary(lessons)
+    completed, next_lesson = resume_status.progress_summary(modules)
 
-    assert completed == [1, 2]
-    assert next_lesson == lessons[2]
+    assert completed == [(4, 1), (4, 2)]
+    assert next_lesson == (5, modules[1]["lessons"][0])
+
+
+def test_verification_uses_latest_checkpoint_across_modules(tmp_path: Path) -> None:
+    commands = resume_status.verification_commands(
+        tmp_path, [(4, 8), (5, 1)]
+    )
+
+    labels = [label for label, _, _ in commands]
+    checkpoint = next(command for label, command, _ in commands if label.startswith("Checkpoint"))
+
+    assert "Checkpoint M05/A01" in labels
+    assert "reference/checkpoints/module-05/lesson-01/tests" in checkpoint
+    assert "HTML M04/A08" in labels
+    assert "HTML M05/A01" in labels
 
 
 def test_classifies_student_changes_separately() -> None:

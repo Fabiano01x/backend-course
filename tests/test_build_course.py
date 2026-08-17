@@ -42,9 +42,9 @@ Resposta em **Markdown**.
 
 def test_builds_single_continuous_lesson_and_index(tmp_path: Path) -> None:
     root = tmp_path
-    module_dir = root / "course" / "04-fastapi"
+    module_dir = root / "course" / "05-sqlalchemy"
     theme_dir = root / "course" / "theme"
-    source_dir = root / "source" / "module-04"
+    source_dir = root / "source" / "module-05"
     module_dir.mkdir(parents=True)
     theme_dir.mkdir(parents=True)
     source_dir.mkdir(parents=True)
@@ -52,7 +52,7 @@ def test_builds_single_continuous_lesson_and_index(tmp_path: Path) -> None:
     (theme_dir / "lesson.js").write_text("// js")
     (source_dir / "01.md").write_text("source")
     manifest = {
-        "module": 4,
+        "module": 5,
         "title": "Módulo",
         "description": "Descrição",
         "lessons": [
@@ -62,8 +62,8 @@ def test_builds_single_continuous_lesson_and_index(tmp_path: Path) -> None:
                 "file": "01-one.md",
                 "title": "Aula um",
                 "summary": "Resumo",
-                "sources": ["source/module-04/01.md"],
-                "checkpoint": "reference/checkpoints/module-04/lesson-01",
+                "sources": ["source/module-05/01.md"],
+                "checkpoint": "reference/checkpoints/module-05/lesson-01",
                 "status": "complete",
             }
         ],
@@ -71,8 +71,8 @@ def test_builds_single_continuous_lesson_and_index(tmp_path: Path) -> None:
     (module_dir / "module.json").write_text(json.dumps(manifest))
     (module_dir / "01-one.md").write_text("# Aula um\n\n## O problema\n\nTexto.")
 
-    written = build_course.build(root, 4, None, root / "dist/html")
-    lesson_html = (root / "dist/html/module-04/01.html").read_text()
+    written = build_course.build(root, 5, None, root / "dist/html")
+    lesson_html = (root / "dist/html/module-05/01.html").read_text()
 
     assert len(written) == 2
     assert '<html lang="pt-BR">' in lesson_html
@@ -80,7 +80,7 @@ def test_builds_single_continuous_lesson_and_index(tmp_path: Path) -> None:
     assert "Aula 1 de 1" in lesson_html
     assert "page-break" not in lesson_html
     assert "@page" not in lesson_html
-    assert (root / "dist/html/module-04/index.html").is_file()
+    assert (root / "dist/html/module-05/index.html").is_file()
 
 
 def test_rejects_missing_lesson(tmp_path: Path) -> None:

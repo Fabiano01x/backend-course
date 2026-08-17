@@ -31,6 +31,15 @@ def test_detects_modified_source_file(tmp_path: Path) -> None:
     assert any("Fonte alterada" in error for error in changed.errors)
 
 
+def test_validates_second_source_module() -> None:
+    validation = validate_course.Validation(ROOT)
+
+    lessons = validation.validate_source(5)
+
+    assert len(lessons) == 7
+    assert validation.errors == []
+
+
 def test_detects_lesson_missing_from_curriculum_map(tmp_path: Path) -> None:
     docs = tmp_path / "docs"
     docs.mkdir()

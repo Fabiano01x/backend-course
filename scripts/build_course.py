@@ -46,8 +46,21 @@ class Lesson(NamedTuple):
     status: str
 
 
+def find_module_dir(root: Path, module: int) -> Path:
+    candidates = sorted(
+        path.parent
+        for path in (root / "course").glob(f"{module:02d}-*/module.json")
+    )
+    if not candidates:
+        raise ValueError(f"Manifesto ausente para o módulo {module}")
+    if len(candidates) > 1:
+        names = ", ".join(str(path.relative_to(root)) for path in candidates)
+        raise ValueError(f"Mais de um diretório encontrado para o módulo {module}: {names}")
+    return candidates[0]
+
+
 def load_manifest(root: Path, module: int) -> tuple[dict[str, Any], list[Lesson], Path]:
-    module_dir = root / "course" / f"{module:02d}-fastapi"
+    module_dir = find_module_dir(root, module)
     manifest_path = module_dir / "module.json"
     try:
         payload = json.loads(manifest_path.read_text(encoding="utf-8"))

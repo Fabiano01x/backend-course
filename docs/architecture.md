@@ -86,13 +86,13 @@ reference/pilot/...             protótipo anterior à sequência completa
 ## Camada de apresentação do curso
 
 ```text
-course/04-fastapi/*.md + module.json
+course/<módulo>/*.md + module.json
                   |
                   v
        scripts/build_course.py
                   |
                   v
- dist/html/module-04/*.html (não versionado)
+ dist/html/module-<número>/*.html (não versionado)
 ```
 
 Markdown continua sendo a fonte editável. O gerador aplica o tema compartilhado

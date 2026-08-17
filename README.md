@@ -4,9 +4,9 @@ Este repositório transforma a parte de backend do curso **Python full stack
 for MNCs** em um percurso prático e cumulativo. A fonte original permanece em
 inglês e imutável; o novo curso é escrito em português do Brasil.
 
-O primeiro marco cobre o Módulo 4 e evolui a Library API ao longo de oito
-aulas. Banco de dados, autenticação, Docker e PDF foram intencionalmente
-adiados.
+O Módulo 4 constrói a fronteira HTTP da Library API ao longo de oito aulas. O
+Módulo 5, agora em andamento, substitui gradualmente o estado em memória por
+persistência relacional. Autenticação e PDF continuam adiados.
 
 ## Estrutura
 
@@ -67,7 +67,8 @@ por aula, sem paginação:
 ```
 
 Durante a produção progressiva, uma aula isolada pode ser gerada com
-`--lesson 1`. Os arquivos ficam em `dist/html/module-04/` e não são commitados.
+`--lesson 1`. O gerador descobre o diretório temático pelo número do módulo.
+Os arquivos ficam em `dist/html/module-<número>/` e não são commitados.
 
 ## Praticar sem receber a solução pronta
 

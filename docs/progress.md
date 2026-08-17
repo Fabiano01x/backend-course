@@ -2,7 +2,7 @@
 
 Estado: Módulo 5 planejado
 
-Última aula processada: 08
+Última aula concluída: M04/A08
 
 ## Fonte
 
@@ -73,10 +73,10 @@ Estado: Módulo 5 planejado
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
 - Manter PDF e autenticação fora deste módulo; Docker entra somente quando a
   necessidade de executar PostgreSQL localmente aparecer na aula 3.
-- Generalizar validador, retomada e gerador para mais de um módulo antes da
-  primeira aula do Módulo 5.
+- Manter validador, retomada e gerador independentes do nome temático dos
+  diretórios de módulo.
 
 ## Próxima etapa
 
-Generalizar as ferramentas do curso para validar e retomar múltiplos módulos.
-Depois, produzir a Aula 1 do Módulo 5 a partir do checkpoint final do Módulo 4.
+Produzir a Aula 1 do Módulo 5 a partir do checkpoint final do Módulo 4,
+modelando o esquema relacional antes de adicionar o ORM.

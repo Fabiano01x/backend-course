@@ -4,7 +4,8 @@ O estado do curso não depende de um terminal aberto nem da memória da conversa
 Ele é preservado por quatro fontes versionadas:
 
 1. o histórico Git registra cada aula e mudança relevante;
-2. `course/04-fastapi/module.json` registra aulas concluídas e a próxima etapa;
+2. os manifestos `course/*/module.json` registram aulas concluídas e a próxima
+   etapa;
 3. `docs/progress.md` explica o estado pedagógico e arquitetural;
 4. cada checkpoint concluído é uma cópia executável e testada.
 

@@ -107,7 +107,7 @@ Antes de alterar aulas ou arquitetura, consultar conforme a tarefa:
 - Antes de uma pausa solicitada, concluir ou reverter o marco atômico em
   andamento; nunca deixar uma aula apresentada como concluída sem commit.
 - Executar `scripts/resume_status.py --verify` depois do último commit.
-- O ponto de retomada deriva do Git e de `course/04-fastapi/module.json`; não
+- O ponto de retomada deriva do Git e dos manifestos `course/*/module.json`; não
   depende de processos, terminais ou artefatos em `dist/` permanecerem abertos.
 - Se a área `student/` tiver mudanças, apenas informá-las separadamente. Não
   prepará-las nem commitá-las.
