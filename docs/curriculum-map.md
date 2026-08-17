@@ -15,7 +15,7 @@ as decisões de implementação são reorganização pedagógica deste projeto.
 
 | Ordem original | Aula original | Fonte | Conceitos identificados | Nova posição | Nova aula | Status | Justificativa |
 |---:|---|---|---|---:|---|---|---|
-| 1 | Asynchronous Python: Coroutines and Async/Await | `source/module-04/01.md` | I/O-bound, coroutine, `async`, `await`, event loop, task, `gather` | 1 | Primeira Library API e programação assíncrona | Reordenado e corrigido | O FastAPI mínimo dará contexto ao async. A afirmação de que aguardar diretamente uma coroutine impede outra task de executar está tecnicamente incorreta e será corrigida. |
+| 1 | Asynchronous Python: Coroutines and Async/Await | `source/module-04/01.md` | I/O-bound, coroutine, `async`, `await`, event loop, task, `gather` | 1 | Primeira Library API e programação assíncrona | Concluído e corrigido | O FastAPI mínimo dá contexto ao async. A explicação incorreta sobre aguardar uma coroutine foi corrigida e comprovada por exemplo. |
 | 2 | Building Modular FastAPI Apps with Routers | `source/module-04/02.md` | `APIRouter`, prefix, tags, packages, `include_router`, organização por domínio | 3 | Crescendo sem um `main.py` monolítico | Piloto concluído | Primeiro tornamos a dor visível com rotas de livros e usuários; depois adotamos routers permanentemente. |
 | 3 | Pydantic Data Models for Request/Response Validation | `source/module-04/03.md` | `BaseModel`, request body, `response_model`, `Field`, validadores | 2 | Contratos de entrada e saída com Pydantic v2 | Reordenado | Os contratos aparecem antes da refatoração estrutural, para que o aluno veja que mover uma rota não muda seu contrato HTTP. |
 | 4 | Dependency Injection for Resource Management | `source/module-04/04.md` | `Depends`, `yield`, setup/teardown, substituição em testes, sessão de banco | 6 | Dependências e ciclo de vida de recursos | Reordenado e dividido | A DI será aplicada primeiro a configurações. `AsyncSession` ficará como ponte conceitual para o Módulo 5, sem banco fictício no projeto atual. |
@@ -35,6 +35,5 @@ as decisões de implementação são reorganização pedagógica deste projeto.
 7. Integração segura com o frontend.
 8. OpenAPI como contrato executável.
 
-Somente a aula 3 foi produzida neste marco. As demais linhas representam o
-mapa aprovado, não aulas já escritas.
-
+As aulas são concluídas sequencialmente. O status de cada linha distingue
+conteúdo produzido de planejamento aprovado.

@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: renderizador visual concluído; produção sequencial pronta para iniciar
+Estado: aula 01 concluída
 
-Última aula processada: 00
+Última aula processada: 01
 
 ## Fonte
 
@@ -16,11 +16,14 @@ Estado: renderizador visual concluído; produção sequencial pronta para inicia
 - Aula piloto produzida: `course/04-fastapi/03-apirouter.md`.
 - Tema contínuo inspirado no Grasp e gerador HTML responsivo concluídos.
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
-- Aulas 1, 2 e 4–8 ainda não foram escritas.
+- Aula 1 e checkpoint executável concluídos.
+- Aulas 2 e 4–8 ainda não foram escritas; aula 3 permanece como piloto.
 
 ## Conceitos incorporados
 
-- Baseline do piloto: FastAPI, `async def`, Pydantic v2 e contratos HTTP.
+- Introduzidos na aula 1: FastAPI mínimo, endpoints GET, `async def`, coroutine,
+  task, event loop e `await`.
+- Correção técnica de coroutine versus task incorporada.
 - Introduzido e permanente: `APIRouter`, prefixos, tags e `include_router`.
 
 ## Arquitetura atual
@@ -31,7 +34,8 @@ Estado: renderizador visual concluído; produção sequencial pronta para inicia
 - Persistência continua em memória, de forma deliberadamente temporária.
 - Ambiente resolvido registrado no `requirements.lock` do piloto.
 - `student/library-api/` está reservado para a implementação manual do aluno.
-- Ainda não existem checkpoints sequenciais; o primeiro será criado com a aula 1.
+- O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
+  leitura em memória.
 
 ## Pendências
 
@@ -42,5 +46,5 @@ Estado: renderizador visual concluído; produção sequencial pronta para inicia
 
 ## Próxima etapa
 
-Produzir a aula 1, seu checkpoint executável e seus testes. Gerar o HTML para
-validação visual antes do commit da aula.
+Produzir a aula 2 a partir do checkpoint 01, introduzindo contratos Pydantic,
+criação e busca por identificador sem antecipar `APIRouter`.

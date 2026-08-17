@@ -12,7 +12,7 @@
       "summary": "Crie a primeira API e construa um modelo mental correto para async e await.",
       "sources": ["source/module-04/01.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-01",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 2,

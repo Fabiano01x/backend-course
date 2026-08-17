@@ -6,19 +6,23 @@ foram produzidas.
 
 ## FastAPI
 
-- Estado: baseline do piloto.
+- Introduzido: Módulo 4 / aula 1.
+- Estado: incorporado.
 - Papel: receber requisições HTTP, validar contratos e produzir respostas.
 - Regra: `app/main.py` é o ponto de composição, não um catálogo de regras de
   domínio.
 
 ## Async e await
 
-- Estado: baseline conceitual; aula autoral pendente.
+- Introduzido: Módulo 4 / aula 1.
+- Estado: incorporado.
 - `async def` cria uma função coroutine; sua chamada produz uma coroutine.
 - `await` suspende a task atual quando a operação aguardada precisa esperar,
   permitindo que o event loop execute outras tasks prontas.
 - Correção registrada: aguardar uma coroutine diretamente não impede, por si
   só, que outras tasks executem quando ela alcança um ponto de suspensão.
+- `create_task()` agenda trabalho independente; não deve envolver toda
+  coroutine apenas para que `await` seja cooperativo.
 
 ## Pydantic v2
 
@@ -44,4 +48,3 @@ foram produzidas.
 - Estado: temporário e deliberadamente simples.
 - Não é repository nem simula durabilidade.
 - Será substituído quando SQLAlchemy e PostgreSQL forem introduzidos.
-
