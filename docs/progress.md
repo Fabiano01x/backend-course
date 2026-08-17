@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: aula 01 concluída
+Estado: aula 02 concluída
 
-Última aula processada: 01
+Última aula processada: 02
 
 ## Fonte
 
@@ -16,14 +16,16 @@ Estado: aula 01 concluída
 - Aula piloto produzida: `course/04-fastapi/03-apirouter.md`.
 - Tema contínuo inspirado no Grasp e gerador HTML responsivo concluídos.
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
-- Aula 1 e checkpoint executável concluídos.
-- Aulas 2 e 4–8 ainda não foram escritas; aula 3 permanece como piloto.
+- Aulas 1 e 2 e seus checkpoints executáveis concluídos.
+- Aulas 4–8 ainda não foram escritas; aula 3 permanece como piloto.
 
 ## Conceitos incorporados
 
 - Introduzidos na aula 1: FastAPI mínimo, endpoints GET, `async def`, coroutine,
   task, event loop e `await`.
 - Correção técnica de coroutine versus task incorporada.
+- Introduzidos na aula 2: schemas Pydantic v2, contratos separados de entrada e
+  saída, validação estrita e respostas `201`, `404` e `422`.
 - Introduzido e permanente: `APIRouter`, prefixos, tags e `include_router`.
 
 ## Arquitetura atual
@@ -36,6 +38,8 @@ Estado: aula 01 concluída
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
+- O checkpoint 02 mantém rotas diretas, adiciona `schemas.py`, estado
+  reinicializável e operações de criação/detalhe.
 
 ## Pendências
 
@@ -46,5 +50,5 @@ Estado: aula 01 concluída
 
 ## Próxima etapa
 
-Produzir a aula 2 a partir do checkpoint 01, introduzindo contratos Pydantic,
-criação e busca por identificador sem antecipar `APIRouter`.
+Reconstruir a aula 3 a partir do checkpoint 02. Mover rotas para `APIRouter`,
+preservar os contratos HTTP e substituir o piloto pelo checkpoint definitivo.

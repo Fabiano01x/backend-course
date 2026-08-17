@@ -22,7 +22,7 @@
       "summary": "Transforme dados soltos em contratos validados e previsíveis.",
       "sources": ["source/module-04/03.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-02",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 3,

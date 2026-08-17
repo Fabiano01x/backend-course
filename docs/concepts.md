@@ -26,11 +26,22 @@ foram produzidas.
 
 ## Pydantic v2
 
-- Estado: baseline do piloto.
+- Introduzido: Módulo 4 / aula 2.
+- Estado: incorporado.
 - `BookCreate`/`UserCreate` controlam entrada; `BookResponse`/`UserResponse`
   controlam saída.
 - Campos extras são recusados para tornar o contrato explícito.
 - A partir daqui, endpoints de criação não recebem `dict` cru.
+- `StrictSchema` recusa campos extras; campos obrigatórios são anotados sem
+  valor padrão e serializados com `model_dump()`.
+
+## Contratos HTTP
+
+- Introduzido: Módulo 4 / aula 2.
+- Criação responde `201`; recurso ausente responde `404`; falhas de tipos,
+  limites ou campos extras respondem `422`.
+- Os modelos de entrada não aceitam identificadores nem estado controlado pelo
+  servidor.
 
 ## APIRouter
 

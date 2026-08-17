@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint da aula 01
+## Estado sequencial atual: checkpoint da aula 02
 
 ```text
 Cliente HTTP
@@ -9,14 +9,21 @@ Cliente HTTP
 FastAPI (app/main.py)
     |
     +--> GET /health
-    +--> GET /books --> lista temporária
-    +--> GET /users --> lista temporária
+    +--> GET/POST /books, GET /books/{book_id}
+    +--> GET/POST /users, GET /users/{user_id}
+             |
+             v
+       schemas Pydantic
+             |
+             v
+   coleções temporárias em memória
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-04/lesson-01/`. `app/main.py` ainda concentra as
-três rotas porque a aplicação é pequena e o problema de organização ainda não
-foi criado. O piloto com routers continua preservado separadamente.
+`reference/checkpoints/module-04/lesson-02/`. `app/main.py` ainda concentra
+saúde, livros e usuários para tornar visível o problema que motivará a aula 3.
+`schemas.py` declara os contratos e `data.py` guarda estado temporário
+reinicializável. O piloto com routers continua preservado separadamente.
 
 ## Separação pedagógica
 
