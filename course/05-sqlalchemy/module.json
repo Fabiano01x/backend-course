@@ -42,7 +42,7 @@
       "summary": "Troque os dicionários por consultas SQLAlchemy e complete o ciclo HTTP de livros.",
       "sources": ["source/module-05/04.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-04",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 5,

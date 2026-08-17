@@ -57,9 +57,10 @@ concluídas.
 
 ## Armazenamento em memória
 
-- Estado: temporário e deliberadamente simples.
-- Não é repository nem simula durabilidade.
-- Será substituído quando SQLAlchemy e PostgreSQL forem introduzidos.
+- Estado: substituído em M05/A04.
+- Serviu como implementação temporária, sem fingir durabilidade ou repository.
+- `app/data.py` não faz parte do estado atual; livros e usuários usam
+  PostgreSQL.
 
 ## Query parameters
 
@@ -77,8 +78,9 @@ concluídas.
 - Pipeline permanente: filtrar → ordenar → contar → recortar.
 - `limit` aceita de 1 a 100 e `offset` deve ser maior ou igual a zero.
 - `total` representa a quantidade depois dos filtros e antes do recorte.
-- O limite de consistência do offset em coleções mutáveis foi declarado; cursor
-  será considerado com persistência real.
+- Em M05/A04, filtros, contagem, ordem, limite e offset são executados pelo
+  PostgreSQL. A paginação ainda pode deslocar itens sob escritas concorrentes;
+  cursor será considerado quando essa necessidade aparecer.
 
 ## Pydantic Settings
 
@@ -98,7 +100,8 @@ concluídas.
 - `GET /info` expõe somente nome, versão, ambiente e debug por meio de
   `AppInfo`.
 - Variáveis de ambiente não são tratadas como cofre de segredos.
-- Banco, JWT e outras configurações sem consumidor real continuam adiados.
+- Configurações privadas de banco nunca entram nessa resposta; JWT continua
+  adiado porque ainda não possui consumidor.
 
 ## Dependency Injection
 
@@ -116,7 +119,8 @@ concluídas.
 
 - Modelo de ciclo: setup → `yield` → consumidor → `finally`/teardown.
 - O fechamento deve ficar em `finally` para também ocorrer em falhas.
-- A sessão de banco permanece apenas como ponte conceitual até o Módulo 5.
+- Desde M05/A03, `get_session` cria e fecha uma `AsyncSession` real; em M05/A04,
+  os routers de domínio passam a consumi-la.
 
 ## CORS e preflight
 
@@ -198,3 +202,22 @@ concluídas.
   conectividade com o servidor.
 - `Base.metadata.create_all` no startup é uma ponte temporária de
   desenvolvimento, não uma migração. Alembic a substituirá na aula 5.
+
+## CRUD persistente com SQLAlchemy
+
+- Introduzido: Módulo 5 / aula 4.
+- Routers usam `AsyncSession` diretamente; repository e service continuam
+  adiados até existir coordenação de regras que justifique a fronteira.
+- `POST` usa `add`, `commit` e `refresh`; violações de unicidade provocam
+  rollback e resposta `409 Conflict`.
+- `select()` constrói consultas; `execute`, `scalar`, `scalars` e `session.get`
+  materializam resultados conforme o formato selecionado.
+- `GET /books` executa filtros, contagem, ordenação determinística, limite e
+  offset no PostgreSQL.
+- Disponibilidade é projetada com `NOT EXISTS` sobre empréstimos ativos; não
+  existe coluna `books.available`.
+- `%`, `_` e `\` são escapados na busca literal com `ILIKE`.
+- `PUT /books/{id}` exige representação completa dos campos editáveis;
+  atualização parcial exigiria um contrato `PATCH` separado.
+- `DELETE /books/{id}` responde `204` sem corpo; histórico protegido por
+  `ON DELETE RESTRICT` gera `409`.

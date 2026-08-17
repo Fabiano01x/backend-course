@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 / aula 03 concluída
+Estado: Módulo 5 / aula 04 concluída
 
-Última aula concluída: M05/A03
+Última aula concluída: M05/A04
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 / aula 03 concluída
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; aulas 1–3 e checkpoints concluídos.
+- Sequência autoral do Módulo 5 definida; aulas 1–4 e checkpoints concluídos.
 
 ## Conceitos incorporados
 
@@ -47,14 +47,17 @@ Estado: Módulo 5 / aula 03 concluída
 - Introduzidos em M05/A03: `AsyncEngine`, `async_sessionmaker`, `AsyncSession`,
   driver `asyncpg`, uma sessão por requisição, lifespan e PostgreSQL com
   Docker Compose.
+- Introduzidos em M05/A04: `select`, `add`, `commit`, `refresh`, `delete`,
+  rollback após `IntegrityError`, `EXISTS`, contagem e paginação em SQL,
+  `PUT`, `DELETE`, `204` e `409`.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A03.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A04.
 - Livros, usuários e rotas operacionais possuem routers separados.
-- O CRUD de domínio continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A03.
+- Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A04.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -80,6 +83,10 @@ Estado: Módulo 5 / aula 03 concluída
 - O checkpoint M05/A03 adiciona configuração segura de URL, engine e fábrica
   assíncronas, sessão por requisição, lifecycle do pool, PostgreSQL local e
   `GET /health/database` com uma consulta real.
+- O checkpoint M05/A04 move livros e usuários para o banco. A listagem traduz
+  filtros, disponibilidade derivada, contagem, ordem e recorte para SQL; livros
+  ganham `PUT` e `DELETE`, e escritas convertem constraints em `409` com
+  rollback.
 
 ## Pendências
 
@@ -92,5 +99,5 @@ Estado: Módulo 5 / aula 03 concluída
 
 ## Próxima etapa
 
-Produzir M05/A04 substituindo o estado em memória dos livros por consultas e
-escritas ORM assíncronas, preservando os contratos HTTP existentes.
+Produzir M05/A05 instalando Alembic, criando uma revisão inicial auditável e
+removendo `Base.metadata.create_all` do startup da aplicação.

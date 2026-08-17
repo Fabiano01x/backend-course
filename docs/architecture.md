@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A03
+## Estado sequencial atual: checkpoint M05/A04
 
 ```text
 Cliente HTTP
@@ -25,19 +25,22 @@ FastAPI (app/main.py)
     +--> books.router  --> GET /books
     |                         |
     |                         v
-    |                 filtrar → ordenar → contar → recortar
-    |                         |
-    |                         v
-    |                      BookPage
+    |                   filtros SQL
+    |                  /           \
+    |                 v             v
+    |              COUNT       ORDER BY → LIMIT/OFFSET
+    |                                  |
+    |                                  v
+    |                     Book + disponibilidade por NOT EXISTS
     |
-    +--> books.router  --> POST /books, GET /books/{book_id}
-    +--> users.router  --> GET/POST /users, GET /users/{user_id}
+    +--> books.router  --> GET/POST/PUT/DELETE /books...
+    +--> users.router  --> GET/POST /users...
                                   |
                                   v
-                            schemas Pydantic
+                   schemas Pydantic + DatabaseSession
                                   |
                                   v
-                      coleções temporárias em memória
+                  SQLAlchemy ORM → asyncpg → PostgreSQL
 
 routers + schemas + metadados
               |
@@ -73,13 +76,12 @@ dispose                 └--> uma AsyncSession por requisição
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-03/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-05/lesson-04/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
-`schemas.py` declara os contratos e `data.py` guarda estado temporário
-reinicializável. A listagem de livros aplica seu pipeline diretamente no router
-porque ainda existe uma única consulta simples. O piloto anterior continua
-preservado separadamente.
+`schemas.py` declara os contratos. `data.py` foi removido: os routers consomem a
+sessão diretamente e mantêm statements ORM visíveis, sem repository ou service.
+O piloto anterior continua preservado separadamente.
 
 `config.py` declara o contrato sem criar instância. `dependencies.py` separa o
 carregador cacheado do provider injetável. Startup chama o carregador; endpoints
@@ -101,9 +103,11 @@ sessões. A fábrica da aplicação aceita esse recurso por argumento, o guarda 
 `app.state` e liga seu startup e shutdown ao lifespan.
 
 `get_session()` cria uma `AsyncSession` por requisição e fecha o contexto após
-o consumidor. `GET /health/database` executa `SELECT 1`, tornando a integração
-visível sem antecipar o CRUD. Os routers de livros e usuários ainda usam as
-coleções em memória; sua migração será a próxima mudança de contrato interno.
+o consumidor. Livros e usuários usam esse recurso para leituras e escritas.
+`GET /books` emite uma contagem e uma consulta de página; disponibilidade é
+projetada por `NOT EXISTS`. ISBN e e-mail duplicados viram `409` após rollback.
+`PUT` substitui os campos editáveis do livro; `DELETE` retorna `204` ou preserva
+histórico por `ON DELETE RESTRICT`.
 
 ## Separação pedagógica
 
@@ -132,17 +136,15 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 
 ## Limites intencionais
 
-- O estado em `app/data.py` não é persistente nem adequado para múltiplos
-  processos. Ele torna visível o problema que motivará o módulo de banco.
-- Paginação por offset sobre uma coleção mutável não oferece snapshot estável;
-  esse limite é explícito até a conversão do CRUD na próxima aula.
+- Paginação por offset no PostgreSQL ainda pode deslocar itens sob escritas
+  concorrentes; cursor permanece adiado até essa garantia ser necessária.
 - Ainda não existem service layer, repository nem migrações versionadas. A
-  sessão é exposta diretamente aos consumidores que realmente precisam dela.
+  sessão é exposta diretamente aos routers que realmente precisam dela.
 - `Base.metadata.create_all` é uma ponte temporária; Alembic deverá removê-la
   do startup na aula 5.
 - `Loan` possui modelo Python, mas ainda não possui rota nem caso de uso.
-- Somente a saúde do banco realiza I/O persistente nesta etapa. O CRUD ainda
-  usa memória e será convertido na aula seguinte.
+- Usuários possuem Create e Read; Update e Delete ainda não foram exigidos pelo
+  projeto. Livros possuem o ciclo CRUD completo.
 
 ## Evolução concluída no Módulo 4
 
@@ -155,5 +157,5 @@ rotas modulares
     → contrato OpenAPI auditado
 ```
 
-CRUD persistente continua na próxima aula; autenticação permanece fora do
-escopo deste módulo.
+Migrações versionadas continuam na próxima aula; autenticação permanece fora
+do escopo deste módulo.

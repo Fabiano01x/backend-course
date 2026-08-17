@@ -223,3 +223,21 @@ acidental, mas não transforma variáveis de ambiente em cofre de segredos.
 inspecionaria estado local. `create_all` no startup é aceito como ponte curta e
 explicitamente temporária; a aula de Alembic deverá removê-lo. Livros e usuários
 ainda usam memória para que a conversão do CRUD permaneça o problema da aula 4.
+
+## ADR-024 — CRUD direto antes de camadas de abstração
+
+**Decisão:** M05/A04 remove `data.py` e injeta `AsyncSession` diretamente nos
+routers de livros e usuários. Filtros, `EXISTS`, contagem, ordenação e
+paginação permanecem visíveis como statements SQLAlchemy. Repository e service
+da fonte não são introduzidos por antecipação; o caso de empréstimo da aula 6
+deverá revelar a fronteira transacional e de regras necessária.
+
+`available` é calculado por `NOT EXISTS`, preservando a decisão de uma única
+fonte de verdade. Escritas confiam nas constraints para resolver concorrência,
+convertem `IntegrityError` esperado em `409` e sempre executam rollback antes de
+reutilizar a sessão.
+
+`PUT /books/{id}` é substituição completa de título, autor e ISBN. A atualização
+parcial mostrada pela fonte não será chamada de `PUT`; um futuro `PATCH` exigirá
+schema e necessidade próprios. `DELETE` responde `204`, enquanto
+`passive_deletes=True` deixa `ON DELETE RESTRICT` proteger o histórico.
