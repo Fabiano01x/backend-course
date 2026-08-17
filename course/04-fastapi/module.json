@@ -82,7 +82,7 @@
       "summary": "Audite e refine a documentação que os consumidores realmente usam.",
       "sources": ["source/module-04/08.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-08",
-      "status": "planned"
+      "status": "complete"
     }
   ]
 }

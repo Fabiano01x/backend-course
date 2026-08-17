@@ -161,3 +161,14 @@ na inicialização, portanto recebem `Settings` diretamente em vez de usar
 O middleware de headers defensivos envolve o middleware CORS para que também
 as respostas de preflight recebam esses headers. Origens, métodos e headers
 permitidos permanecem explícitos; wildcard é rejeitado com credenciais.
+
+## ADR-019 — OpenAPI é contrato testado, não decoração
+
+**Decisão:** a Aula 8 audita `/openapi.json` diretamente. Operações recebem
+`operationId` explícito para preservar nomes consumidos por ferramentas mesmo
+quando uma função Python for renomeada. Metadados, tags, exemplos, respostas de
+sucesso e erros reais são protegidos por testes.
+
+Informações fictícias de contato ou licença e uma rota artificial marcada como
+obsoleta não foram copiadas da fonte. `deprecated=True` será usado somente
+quando existir uma substituição e um plano real de migração.

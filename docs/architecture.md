@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint da aula 07
+## Estado sequencial atual: checkpoint da aula 08
 
 ```text
 Cliente HTTP
@@ -32,6 +32,14 @@ FastAPI (app/main.py)
                                   v
                       coleções temporárias em memória
 
+routers + schemas + metadados
+              |
+              v
+        /openapi.json
+          |       |
+          v       v
+       /docs    /redoc
+
 defaults + .env + variáveis do processo
                   |
                   v
@@ -45,7 +53,7 @@ defaults + .env + variáveis do processo
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-04/lesson-07/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-04/lesson-08/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos e `data.py` guarda estado temporário
@@ -60,6 +68,11 @@ políticas de startup. CORS aceita apenas origens, métodos e headers declarados
 o middleware externo aplica headers defensivos inclusive ao preflight. HSTS
 exige simultaneamente produção e HTTPS, enquanto CSP permanece adiada para não
 quebrar Swagger e ReDoc com uma política genérica.
+
+O contrato OpenAPI agrega metadados da aplicação, descrições das tags,
+identificadores estáveis das operações, schemas Pydantic e respostas adicionais.
+Testes consultam `/openapi.json` para proteger esse contrato; Swagger UI e
+ReDoc apenas o apresentam de formas diferentes.
 
 ## Separação pedagógica
 
@@ -98,7 +111,7 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 - As funções são `async` para preservar o caminho pedagógico, mas o estado
   atual não realiza I/O. Nenhuma operação bloqueante deve ser adicionada a elas.
 
-## Evolução planejada no Módulo 4
+## Evolução concluída no Módulo 4
 
 ```text
 rotas modulares

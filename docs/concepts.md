@@ -140,3 +140,19 @@ concluídas.
   usados pelas interfaces.
 - `create_app(settings)` permite testar políticas definidas na inicialização
   sem depender de reimportação ou estado global.
+
+## OpenAPI como contrato
+
+- Introduzido: Módulo 4 / aula 8.
+- `/openapi.json` é a fonte legível por máquina usada por Swagger UI, ReDoc e
+  geradores de clientes.
+- Metadados da aplicação descrevem somente recursos realmente implementados;
+  contato, licença e deprecação não são inventados para ornamentar a interface.
+- Tags possuem descrição e ordem explícitas.
+- Cada operação possui `operationId` único e estável, resumo e descrição da
+  resposta principal.
+- `ErrorResponse` documenta os `404` realmente produzidos por consultas de
+  livro e usuário; o `422` de validação continua gerado pelo FastAPI.
+- `BookCreate` e `UserCreate` publicam exemplos no JSON Schema.
+- Testes inspecionam o JSON publicado, não apenas a disponibilidade visual de
+  `/docs` e `/redoc`.
