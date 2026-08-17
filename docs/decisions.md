@@ -186,3 +186,14 @@ O curso usará a API tipada do SQLAlchemy 2 (`DeclarativeBase`, `Mapped`,
 especiais não serão interpoladas ingenuamente em URLs. `create_all` não será
 tratado como migração, autogenerate sempre exigirá revisão e I/O implícito de
 relacionamentos não será assumido seguro com `AsyncSession`.
+
+## ADR-021 — Disponibilidade é derivada do histórico
+
+**Decisão:** o esquema relacional não persiste `books.available`. Um livro está
+indisponível quando existe um `loan` com o mesmo `book_id` e `returned_at` nulo.
+Um índice único parcial garante no banco que apenas um empréstimo ativo exista
+por livro.
+
+O campo `available` permanece no contrato HTTP e será calculado pela consulta.
+Isso evita duas fontes de verdade. `Loan` é uma entidade associativa, e não uma
+tabela `secondary` simples, porque possui datas e histórico próprios.

@@ -156,3 +156,17 @@ concluídas.
 - `BookCreate` e `UserCreate` publicam exemplos no JSON Schema.
 - Testes inspecionam o JSON publicado, não apenas a disponibilidade visual de
   `/docs` e `/redoc`.
+
+## Esquema relacional
+
+- Introduzido: Módulo 5 / aula 1.
+- `users`, `books` e `loans` separam fatos com identidade própria.
+- Chaves estrangeiras de `loans` usam `ON DELETE RESTRICT` para preservar o
+  histórico de livros e usuários.
+- E-mail e ISBN possuem unicidade; checks protegem texto e ordem temporal.
+- `books.available` não é persistido: disponibilidade deriva da ausência de um
+  empréstimo com `returned_at IS NULL`.
+- Um índice único parcial permite histórico, mas impede dois empréstimos ativos
+  para o mesmo livro.
+- Autores ainda não são entidades porque não possuem ciclo de vida próprio no
+  escopo atual.

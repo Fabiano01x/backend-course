@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 planejado
+Estado: Módulo 5 / aula 01 concluída
 
-Última aula concluída: M04/A08
+Última aula concluída: M05/A01
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 planejado
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; nenhuma aula foi iniciada.
+- Sequência autoral do Módulo 5 definida; aula 1 e checkpoint concluídos.
 
 ## Conceitos incorporados
 
@@ -40,14 +40,16 @@ Estado: Módulo 5 planejado
   headers defensivos, HSTS condicional e fábrica de aplicação.
 - Introduzidos na aula 8: OpenAPI como contrato, metadados, descrições de tags,
   `operationId` estáveis, exemplos de schemas e respostas adicionais.
+- Introduzidos em M05/A01: esquema relacional, normalização prática, chaves,
+  integridade referencial, constraints e índice único parcial.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint 08.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A01.
 - Livros, usuários e rotas operacionais possuem routers separados.
 - Persistência continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint 08.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A01.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -66,6 +68,8 @@ Estado: Módulo 5 planejado
   permanecem funcionais sem uma CSP genérica.
 - O checkpoint 08 audita `/openapi.json`, estabiliza identificadores de
   operação e documenta metadados, exemplos, sucessos e erros reais.
+- O checkpoint M05/A01 preserva a API e acrescenta `schema.sql` com `users`,
+  `books`, `loans` e invariantes testadas, ainda sem instalar ORM.
 
 ## Pendências
 
@@ -78,5 +82,5 @@ Estado: Módulo 5 planejado
 
 ## Próxima etapa
 
-Produzir a Aula 1 do Módulo 5 a partir do checkpoint final do Módulo 4,
-modelando o esquema relacional antes de adicionar o ORM.
+Produzir M05/A02 a partir do schema aprovado, traduzindo tabelas e relações
+para modelos tipados SQLAlchemy 2 sem abrir conexão com o banco.

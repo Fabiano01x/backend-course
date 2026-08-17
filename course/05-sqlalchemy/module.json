@@ -12,7 +12,7 @@
       "summary": "Modele usuários, livros e empréstimos com chaves e restrições explícitas.",
       "sources": ["source/module-05/01.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-01",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 2,
