@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Valida fonte, cobertura, aula piloto e estado arquitetural do marco atual."""
+"""Valida fonte, manifesto, aulas e checkpoints progressivos do curso."""
 
 from __future__ import annotations
 
@@ -13,24 +13,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PILOT_ROOT = "reference/pilot/module-04/lesson-03"
-REQUIRED_PILOT_HEADINGS = (
-    "Onde estamos",
+REQUIRED_LESSON_HEADINGS = (
     "O problema",
     "Por que isso importa",
     "O conceito",
     "Modelo mental",
     "Exemplo mínimo",
     "Aplicando ao projeto",
-    "Antes",
-    "Depois",
-    "O que mudou",
-    "Fluxo da requisição",
+    "Antes e depois",
     "Como testar",
-    "Erros comuns",
-    "Exercício guiado",
-    "Desafio",
+    "Exercícios",
     "Checkpoint",
-    "Estado atual do projeto",
     "Próximo problema",
 )
 
@@ -97,59 +90,101 @@ class Validation:
                     f"aparece {occurrences} vez(es)"
                 )
 
-    def validate_pilot(self) -> None:
-        pilot = self.require_file("course/04-fastapi/03-apirouter.md")
-        if pilot is None:
-            return
-        content = pilot.read_text()
-        headings = set(re.findall(r"^## (.+?)\s*$", content, flags=re.MULTILINE))
-        for heading in REQUIRED_PILOT_HEADINGS:
-            if heading not in headings:
-                self.error(f"Seção ausente na aula piloto: {heading}")
-        if "Correção técnica" not in content:
-            self.error("A aula piloto deve identificar ao menos uma correção técnica")
-
+    def validate_local_links(self, path: Path, content: str) -> None:
         link_pattern = re.compile(r"(?<!!)\[[^]]*\]\(([^)]+)\)")
         for target in link_pattern.findall(content):
             if target.startswith(("http://", "https://", "#")):
                 continue
-            local_target = (pilot.parent / target.split("#", 1)[0]).resolve()
+            local_target = (path.parent / target.split("#", 1)[0]).resolve()
             if not local_target.exists():
-                self.error(f"Link local quebrado na aula piloto: {target}")
+                self.error(f"Link local quebrado em {path.relative_to(self.root)}: {target}")
 
-    def validate_progress_and_project(self) -> None:
+    def validate_module(self) -> list[dict[str, object]]:
+        manifest_path = self.require_file("course/04-fastapi/module.json")
+        if manifest_path is None:
+            return []
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except (json.JSONDecodeError, OSError) as error:
+            self.error(f"Manifesto autoral inválido: {error}")
+            return []
+        lessons = manifest.get("lessons", [])
+        if manifest.get("module") != 4 or len(lessons) != 8:
+            self.error("module.json deve descrever as oito aulas do Módulo 4")
+            return lessons
+
+        covered_sources: set[str] = set()
+        for expected, lesson in enumerate(lessons, start=1):
+            if lesson.get("number") != expected:
+                self.error(f"Ordem inválida em module.json: aula esperada {expected}")
+            status = lesson.get("status")
+            if status not in {"planned", "pilot", "complete"}:
+                self.error(f"Estado inválido na aula {expected}: {status}")
+            for source in lesson.get("sources", []):
+                covered_sources.add(str(source))
+                self.require_file(str(source))
+
+            lesson_path = self.root / "course/04-fastapi" / str(lesson.get("file"))
+            if status == "planned":
+                continue
+            if not lesson_path.is_file():
+                self.error(f"Aula marcada como {status}, mas ausente: {lesson_path.relative_to(self.root)}")
+                continue
+            content = lesson_path.read_text()
+            if "```json" in content and '"type"' in content:
+                self.error(f"Componente JSON bruto encontrado em {lesson_path.relative_to(self.root)}")
+            self.validate_local_links(lesson_path, content)
+
+            if status == "complete":
+                headings = set(re.findall(r"^## (.+?)\s*$", content, flags=re.MULTILINE))
+                for heading in REQUIRED_LESSON_HEADINGS:
+                    if heading not in headings:
+                        self.error(
+                            f"Seção ausente na aula {expected:02d}: {heading}"
+                        )
+                checkpoint = self.root / str(lesson.get("checkpoint"))
+                if not checkpoint.is_dir():
+                    self.error(f"Checkpoint ausente da aula {expected:02d}: {checkpoint}")
+                elif not (checkpoint / "tests").is_dir():
+                    self.error(f"Testes ausentes no checkpoint da aula {expected:02d}")
+
+        expected_sources = {f"source/module-04/{number:02d}.md" for number in range(1, 9)}
+        missing = expected_sources - covered_sources
+        if missing:
+            self.error(f"Fontes sem mapeamento em module.json: {', '.join(sorted(missing))}")
+        return lessons
+
+    def validate_progress_and_project(self, module_lessons: list[dict[str, object]]) -> None:
         progress = self.require_file("docs/progress.md")
         if progress is not None:
             content = progress.read_text()
-            for marker in (
-                "Estado: piloto preservado e fluxo progressivo configurado",
-                "Última aula processada: 03",
-            ):
-                if marker not in content:
-                    self.error(f"Marcador ausente em progress.md: {marker}")
+            completed = [item for item in module_lessons if item.get("status") == "complete"]
+            last = max((int(item["number"]) for item in completed), default=0)
+            expected_marker = f"Última aula processada: {last:02d}"
+            if expected_marker not in content:
+                self.error(f"Marcador ausente em progress.md: {expected_marker}")
 
-        main = self.require_file(f"{PILOT_ROOT}/app/main.py")
+        completed = [item for item in module_lessons if item.get("status") == "complete"]
+        if completed:
+            latest = max(completed, key=lambda item: int(item["number"]))
+            project_root = str(latest["checkpoint"])
+        else:
+            project_root = PILOT_ROOT
+        main = self.require_file(f"{project_root}/app/main.py")
         if main is not None:
             content = main.read_text()
-            if "include_router" not in content:
-                self.error("main.py não registra APIRouter")
-            if re.search(r"@app\.(get|post|put|patch|delete)\(\s*[\"']/((books)|(users))", content):
-                self.error("Rotas de domínio não podem permanecer diretamente em main.py")
-
-        for relative_path in (
-            f"{PILOT_ROOT}/app/routers/books.py",
-            f"{PILOT_ROOT}/app/routers/users.py",
-            f"{PILOT_ROOT}/app/routers/system.py",
-        ):
-            path = self.require_file(relative_path)
-            if path is not None and "APIRouter" not in path.read_text():
-                self.error(f"{relative_path} não declara APIRouter")
+            latest_number = max((int(item["number"]) for item in completed), default=3)
+            if latest_number >= 3:
+                if "include_router" not in content:
+                    self.error("main.py não registra APIRouter a partir da aula 03")
+                if re.search(r"@app\.(get|post|put|patch|delete)\(\s*[\"']/((books)|(users))", content):
+                    self.error("Rotas de domínio não podem permanecer diretamente em main.py")
 
     def run(self) -> list[str]:
         lessons = self.validate_source()
         self.validate_coverage(lessons)
-        self.validate_pilot()
-        self.validate_progress_and_project()
+        module_lessons = self.validate_module()
+        self.validate_progress_and_project(module_lessons)
         for required in (
             "AGENTS.md",
             "README.md",
@@ -182,7 +217,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}", file=sys.stderr)
         return 1
-    print("Validação concluída: fonte, cobertura, piloto e projeto estão consistentes.")
+    print("Validação concluída: fonte, aulas, checkpoints e projeto estão consistentes.")
     return 0
 
 

@@ -1,0 +1,4 @@
+# Ferramentas do curso resolvidas e testadas em 2026-08-16.
+Markdown==3.10.3
+Pygments==2.20.0
+pytest==8.4.2

@@ -4,9 +4,9 @@ Este repositório transforma a parte de backend do curso **Python full stack
 for MNCs** em um percurso prático e cumulativo. A fonte original permanece em
 inglês e imutável; o novo curso é escrito em português do Brasil.
 
-O primeiro marco cobre a análise do Módulo 4 e uma aula piloto sobre
-`APIRouter`. Banco de dados, autenticação, Docker, HTML e PDF foram
-intencionalmente adiados.
+O primeiro marco cobre o Módulo 4 e evolui a Library API ao longo de oito
+aulas. Banco de dados, autenticação, Docker e PDF foram intencionalmente
+adiados.
 
 ## Estrutura
 
@@ -19,6 +19,7 @@ reference/checkpoints/ soluções cumulativas, uma por aula concluída
 docs/             mapa curricular e memória operacional
 scripts/          importação, comparação e validação
 tests/            testes das ferramentas do curso
+dist/html/        aulas HTML geradas localmente (ignorado pelo Git)
 ```
 
 ## Importar a fonte
@@ -52,6 +53,19 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 .venv/bin/python -m pytest -q tests reference/pilot/module-04/lesson-03/tests
 .venv/bin/python scripts/validate_course.py
 ```
+
+## Gerar a versão visual das aulas
+
+O Markdown é a fonte canônica. A saída abaixo cria uma página HTML contínua
+por aula, sem paginação:
+
+```bash
+.venv/bin/python -m pip install -r requirements-course.lock
+.venv/bin/python scripts/build_course.py --module 4
+```
+
+Durante a produção progressiva, uma aula isolada pode ser gerada com
+`--lesson 1`. Os arquivos ficam em `dist/html/module-04/` e não são commitados.
 
 ## Praticar sem receber a solução pronta
 

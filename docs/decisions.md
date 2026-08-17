@@ -1,9 +1,15 @@
 # Decisões arquiteturais e pedagógicas
 
-## ADR-001 — Markdown como fonte autoral
+## ADR-001 — Markdown como fonte autoral e HTML derivado
 
-**Decisão:** aulas novas serão mantidas somente em Markdown. HTML e PDF serão
-artefatos derivados em uma etapa posterior.
+**Decisão:** aulas novas são mantidas em Markdown semântico. O HTML contínuo é
+um artefato local reproduzível, gerado por `scripts/build_course.py`, e não é
+versionado. PDF permanece fora do escopo.
+
+O tema adapta a linguagem visual da fonte — fundo bege, títulos serifados,
+cartões e código escuro — para a identidade própria Backend Course / Library
+API. Não copia marca, controles ou identidade do proprietário da plataforma.
+Cada aula gera um único documento de rolagem vertical, sem divisão em páginas.
 
 ## ADR-002 — Fonte original imutável
 
@@ -91,3 +97,13 @@ Codex não inclui `student/` em seus commits.
 `reference/pilot/`. Depois que as aulas 1 e 2 forem concluídas, a aula 3 será
 reconstruída a partir do checkpoint 02 e receberá seu checkpoint e commit
 definitivos.
+
+## ADR-013 — Componentes visuais continuam legíveis no Markdown
+
+**Decisão:** problema, conceito, modelo mental, correção, recurso, orientação
+e checkpoint usam a sintaxe de admonitions do Python-Markdown. Exercícios podem
+usar `<details markdown="1">`. O tema converte esses elementos em componentes
+visuais sem inserir CSS particular dentro das aulas.
+
+O manifesto `course/04-fastapi/module.json` é a fonte de verdade para ordem,
+metadados, proveniência, checkpoint e estado de cada aula.

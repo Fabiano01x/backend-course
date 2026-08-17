@@ -1,0 +1,88 @@
+{
+  "module": 4,
+  "slug": "fastapi",
+  "title": "FastAPI — construindo a Library API",
+  "description": "Uma API cumulativa para aprender contratos HTTP, organização, configuração, segurança e documentação.",
+  "lessons": [
+    {
+      "number": 1,
+      "slug": "fastapi-async",
+      "file": "01-fastapi-async.md",
+      "title": "Primeira Library API e programação assíncrona",
+      "summary": "Crie a primeira API e construa um modelo mental correto para async e await.",
+      "sources": ["source/module-04/01.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-01",
+      "status": "planned"
+    },
+    {
+      "number": 2,
+      "slug": "pydantic-contracts",
+      "file": "02-pydantic-contracts.md",
+      "title": "Contratos de entrada e saída com Pydantic v2",
+      "summary": "Transforme dados soltos em contratos validados e previsíveis.",
+      "sources": ["source/module-04/03.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-02",
+      "status": "planned"
+    },
+    {
+      "number": 3,
+      "slug": "apirouter",
+      "file": "03-apirouter.md",
+      "title": "Crescendo sem um main.py monolítico",
+      "summary": "Separe as rotas por domínio sem alterar o contrato da API.",
+      "sources": ["source/module-04/02.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-03",
+      "status": "pilot"
+    },
+    {
+      "number": 4,
+      "slug": "filtering-pagination",
+      "file": "04-filtering-pagination.md",
+      "title": "Filtros, ordenação e paginação",
+      "summary": "Projete consultas seguras para uma coleção em memória.",
+      "sources": ["source/module-04/05.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-04",
+      "status": "planned"
+    },
+    {
+      "number": 5,
+      "slug": "settings",
+      "file": "05-settings.md",
+      "title": "Configuração por ambiente",
+      "summary": "Retire configurações do código e valide-as com Pydantic Settings.",
+      "sources": ["source/module-04/07.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-05",
+      "status": "planned"
+    },
+    {
+      "number": 6,
+      "slug": "dependency-injection",
+      "file": "06-dependency-injection.md",
+      "title": "Dependências e ciclo de vida de recursos",
+      "summary": "Injete configurações e prepare dependências substituíveis em testes.",
+      "sources": ["source/module-04/04.md", "source/module-04/07.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-06",
+      "status": "planned"
+    },
+    {
+      "number": 7,
+      "slug": "cors-security",
+      "file": "07-cors-security.md",
+      "title": "Integração segura com o frontend",
+      "summary": "Configure CORS e headers de segurança de acordo com o ambiente.",
+      "sources": ["source/module-04/06.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-07",
+      "status": "planned"
+    },
+    {
+      "number": 8,
+      "slug": "openapi",
+      "file": "08-openapi.md",
+      "title": "OpenAPI como contrato executável",
+      "summary": "Audite e refine a documentação que os consumidores realmente usam.",
+      "sources": ["source/module-04/08.md"],
+      "checkpoint": "reference/checkpoints/module-04/lesson-08",
+      "status": "planned"
+    }
+  ]
+}

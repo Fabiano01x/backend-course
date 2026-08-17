@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: piloto preservado e fluxo progressivo configurado
+Estado: renderizador visual concluído; produção sequencial pronta para iniciar
 
-Última aula processada: 03
+Última aula processada: 00
 
 ## Fonte
 
@@ -14,6 +14,8 @@ Estado: piloto preservado e fluxo progressivo configurado
 
 - Ordem pedagógica do Módulo 4 definida.
 - Aula piloto produzida: `course/04-fastapi/03-apirouter.md`.
+- Tema contínuo inspirado no Grasp e gerador HTML responsivo concluídos.
+- Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1, 2 e 4–8 ainda não foram escritas.
 
 ## Conceitos incorporados
@@ -33,13 +35,12 @@ Estado: piloto preservado e fluxo progressivo configurado
 
 ## Pendências
 
-- Submeter o padrão da aula piloto à avaliação.
-- Depois da aprovação, produzir as aulas em ordem, começando pela nova aula 1.
+- Produzir as aulas em ordem, começando pela nova aula 1.
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
-- Manter HTML, PDF, SQLAlchemy, autenticação e Docker fora deste marco.
+- Manter PDF, SQLAlchemy, autenticação e Docker fora deste marco.
 
 ## Próxima etapa
 
-Validar didática, profundidade, tamanho e estrutura do piloto. Não produzir o
-restante do módulo antes dessa validação.
+Produzir a aula 1, seu checkpoint executável e seus testes. Gerar o HTML para
+validação visual antes do commit da aula.

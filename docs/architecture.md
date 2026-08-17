@@ -36,6 +36,22 @@ reference/checkpoints/...       solução cumulativa por aula
 reference/pilot/...             protótipo anterior à sequência completa
 ```
 
+## Camada de apresentação do curso
+
+```text
+course/04-fastapi/*.md + module.json
+                  |
+                  v
+       scripts/build_course.py
+                  |
+                  v
+ dist/html/module-04/*.html (não versionado)
+```
+
+Markdown continua sendo a fonte editável. O gerador aplica o tema compartilhado
+de `course/theme/`, cria o índice e a navegação, e produz uma página contínua
+por aula. O processo não altera os Markdown nem a área do aluno.
+
 ## Limites intencionais
 
 - O estado em `app/data.py` não é persistente nem adequado para múltiplos

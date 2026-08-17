@@ -44,16 +44,31 @@ def test_detects_lesson_missing_from_curriculum_map(tmp_path: Path) -> None:
     ]
 
 
-def test_detects_missing_pilot_sections_and_broken_link(tmp_path: Path) -> None:
-    pilot_dir = tmp_path / "course" / "04-fastapi"
-    pilot_dir.mkdir(parents=True)
-    (pilot_dir / "03-apirouter.md").write_text(
-        "# Pilot\n\nCorreção técnica\n\n[missing](does-not-exist.md)\n"
-    )
+def test_detects_missing_complete_lesson_sections_and_broken_link(tmp_path: Path) -> None:
+    course_dir = tmp_path / "course" / "04-fastapi"
+    source_dir = tmp_path / "source" / "module-04"
+    checkpoint = tmp_path / "reference" / "checkpoints" / "module-04" / "lesson-01"
+    course_dir.mkdir(parents=True)
+    source_dir.mkdir(parents=True)
+    (checkpoint / "tests").mkdir(parents=True)
+    for number in range(1, 9):
+        (source_dir / f"{number:02d}.md").write_text("source")
+    (course_dir / "01-one.md").write_text("# Aula\n\n[missing](does-not-exist.md)\n")
+    lessons = []
+    for number in range(1, 9):
+        lessons.append(
+            {
+                "number": number,
+                "file": "01-one.md" if number == 1 else f"{number:02d}.md",
+                "sources": [f"source/module-04/{number:02d}.md"],
+                "checkpoint": f"reference/checkpoints/module-04/lesson-{number:02d}",
+                "status": "complete" if number == 1 else "planned",
+            }
+        )
+    (course_dir / "module.json").write_text(json.dumps({"module": 4, "lessons": lessons}))
     validation = validate_course.Validation(tmp_path)
 
-    validation.validate_pilot()
+    validation.validate_module()
 
     assert any("Seção ausente" in error for error in validation.errors)
     assert any("Link local quebrado" in error for error in validation.errors)
-
