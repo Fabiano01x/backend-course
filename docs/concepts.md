@@ -41,6 +41,8 @@ concluídas.
   limites ou campos extras respondem `422`.
 - Os modelos de entrada não aceitam identificadores nem estado controlado pelo
   servidor.
+- Na aula 4, `GET /books` passa intencionalmente de um array solto para
+  `BookPage`, com `items`, `total`, `limit` e `offset`.
 
 ## APIRouter
 
@@ -58,3 +60,22 @@ concluídas.
 - Estado: temporário e deliberadamente simples.
 - Não é repository nem simula durabilidade.
 - Será substituído quando SQLAlchemy e PostgreSQL forem introduzidos.
+
+## Query parameters
+
+- Introduzido: Módulo 4 / aula 4.
+- Estado: incorporado na listagem de livros.
+- `available` distingue ausência (`None`) de filtro explícito por `false`.
+- `author` faz busca parcial sem diferença entre maiúsculas e minúsculas.
+- `sort_by` aceita somente `id`, `title` e `author`; `order` aceita `asc` e
+  `desc`.
+- Valores fora do contrato respondem `422` antes do endpoint.
+
+## Paginação limit-offset
+
+- Introduzido: Módulo 4 / aula 4.
+- Pipeline permanente: filtrar → ordenar → contar → recortar.
+- `limit` aceita de 1 a 100 e `offset` deve ser maior ou igual a zero.
+- `total` representa a quantidade depois dos filtros e antes do recorte.
+- O limite de consistência do offset em coleções mutáveis foi declarado; cursor
+  será considerado com persistência real.

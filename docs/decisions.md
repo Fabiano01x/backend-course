@@ -115,3 +115,14 @@ metadados, proveniência, checkpoint e estado de cada aula.
 estado durável do trabalho. `scripts/resume_status.py` deriva dessas fontes um
 resumo de retomada e pode reexecutar todas as verificações necessárias antes de
 uma pausa. Servidores locais e `dist/` são descartáveis.
+
+## ADR-015 — Contrato de consulta antes do banco
+
+**Decisão:** filtros, ordenação e paginação são implementados primeiro sobre a
+coleção em memória. `GET /books` passa a responder `BookPage`; filtros são
+aplicados antes da ordenação, `total` é calculado antes do recorte e campos de
+ordenação são enumerados explicitamente.
+
+SQLAlchemy e `fastapi-pagination`, presentes na fonte, não entram no Módulo 4.
+O contrato será traduzido para consultas persistentes no Módulo 5, quando for
+possível avaliar custo, contagem e estratégia de paginação com um banco real.

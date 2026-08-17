@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint da aula 03
+## Estado sequencial atual: checkpoint da aula 04
 
 ```text
 Cliente HTTP
@@ -9,21 +9,31 @@ Cliente HTTP
 FastAPI (app/main.py)
     |
     +--> system.router --> GET /health
-    +--> books.router  --> GET/POST /books, GET /books/{book_id}
+    +--> books.router  --> GET /books
+    |                         |
+    |                         v
+    |                 filtrar → ordenar → contar → recortar
+    |                         |
+    |                         v
+    |                      BookPage
+    |
+    +--> books.router  --> POST /books, GET /books/{book_id}
     +--> users.router  --> GET/POST /users, GET /users/{user_id}
-                              |
-                              v
-                        schemas Pydantic
-                              |
-                              v
-                  coleções temporárias em memória
+                                  |
+                                  v
+                            schemas Pydantic
+                                  |
+                                  v
+                      coleções temporárias em memória
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-04/lesson-03/`. `app/main.py` cria a aplicação e
+`reference/checkpoints/module-04/lesson-04/`. `app/main.py` cria a aplicação e
 inclui os routers; cada módulo em `app/routers/` concentra um grupo de rotas.
 `schemas.py` declara os contratos e `data.py` guarda estado temporário
-reinicializável. O piloto anterior continua preservado separadamente.
+reinicializável. A listagem de livros aplica seu pipeline diretamente no router
+porque ainda existe uma única consulta simples. O piloto anterior continua
+preservado separadamente.
 
 ## Separação pedagógica
 
@@ -54,6 +64,8 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 
 - O estado em `app/data.py` não é persistente nem adequado para múltiplos
   processos. Ele torna visível o problema que motivará o módulo de banco.
+- Paginação por offset sobre uma coleção mutável não oferece snapshot estável;
+  esse limite é explícito até a introdução do banco.
 - Ainda não existem service layer, repository, ORM, migrations ou transações.
 - `Loan` será introduzido quando houver persistência suficiente para expressar
   disponibilidade e devolução corretamente.

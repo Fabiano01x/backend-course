@@ -42,7 +42,7 @@
       "summary": "Projete consultas seguras para uma coleção em memória.",
       "sources": ["source/module-04/05.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-04",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 5,
