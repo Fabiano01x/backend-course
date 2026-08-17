@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 / aula 04 concluída
+Estado: Módulo 5 / aula 05 concluída
 
-Última aula concluída: M05/A04
+Última aula concluída: M05/A05
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 / aula 04 concluída
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; aulas 1–4 e checkpoints concluídos.
+- Sequência autoral do Módulo 5 definida; aulas 1–5 e checkpoints concluídos.
 
 ## Conceitos incorporados
 
@@ -50,14 +50,16 @@ Estado: Módulo 5 / aula 04 concluída
 - Introduzidos em M05/A04: `select`, `add`, `commit`, `refresh`, `delete`,
   rollback após `IntegrityError`, `EXISTS`, contagem e paginação em SQL,
   `PUT`, `DELETE`, `204` e `409`.
+- Introduzidos em M05/A05: Alembic, grafo de revisões, `upgrade`, `downgrade`,
+  `target_metadata`, autogenerate revisado, baseline e migração assíncrona.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A04.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A05.
 - Livros, usuários e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A04.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A05.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -87,17 +89,20 @@ Estado: Módulo 5 / aula 04 concluída
   filtros, disponibilidade derivada, contagem, ordem e recorte para SQL; livros
   ganham `PUT` e `DELETE`, e escritas convertem constraints em `409` com
   rollback.
+- O checkpoint M05/A05 adiciona a baseline `0001_library_schema`, reutiliza a
+  configuração validada no ambiente assíncrono do Alembic e remove todo DDL
+  do startup. Upgrade, downgrade, inspeção do esquema e CRUD foram validados
+  em PostgreSQL 18.4 efêmero.
 
 ## Pendências
 
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
 - Manter PDF e autenticação fora deste módulo.
-- Remover o `create_all` temporário quando Alembic entrar na aula 5.
 - Manter validador, retomada e gerador independentes do nome temático dos
   diretórios de módulo.
 
 ## Próxima etapa
 
-Produzir M05/A05 instalando Alembic, criando uma revisão inicial auditável e
-removendo `Base.metadata.create_all` do startup da aplicação.
+Produzir M05/A06 implementando o caso de uso de empréstimo em uma fronteira
+transacional atômica, sem antecipar uma Unit of Work genérica.

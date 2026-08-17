@@ -200,8 +200,8 @@ concluídas.
 - A engine pertence ao ciclo da aplicação e é descartada no shutdown.
 - `GET /health/database` executa `SELECT 1`; `session.is_active` não comprova
   conectividade com o servidor.
-- `Base.metadata.create_all` no startup é uma ponte temporária de
-  desenvolvimento, não uma migração. Alembic a substituirá na aula 5.
+- Desde M05/A05, o lifespan não executa DDL; ele apenas descarta a engine no
+  shutdown. O esquema é atualizado explicitamente antes de iniciar a API.
 
 ## CRUD persistente com SQLAlchemy
 
@@ -221,3 +221,19 @@ concluídas.
   atualização parcial exigiria um contrato `PATCH` separado.
 - `DELETE /books/{id}` responde `204` sem corpo; histórico protegido por
   `ON DELETE RESTRICT` gera `409`.
+
+## Migrações com Alembic
+
+- Introduzido: Módulo 5 / aula 5.
+- Revisões formam um grafo por `revision` e `down_revision`; `head` representa
+  a ponta esperada e `alembic_version` registra o estado do banco.
+- A baseline `0001_library_schema` cria e reverte `users`, `books`, `loans`,
+  constraints e o índice único parcial.
+- `target_metadata = Base.metadata` permite comparar modelos e banco.
+- Autogenerate cria uma candidata, não uma migração confiável sem revisão.
+- O ambiente Alembic reutiliza `Settings` e `build_database_url`; credenciais
+  não são persistidas no INI.
+- A conexão `asyncpg` executa as operações síncronas do Alembic por
+  `connection.run_sync`, com `NullPool` e descarte da engine ao final.
+- Migrações são etapa de deploy: `alembic upgrade head` acontece antes do
+  processo da API e nunca dentro de seu startup.

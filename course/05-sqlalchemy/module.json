@@ -52,7 +52,7 @@
       "summary": "Versione e revise mudanças do banco sem depender de create_all.",
       "sources": ["source/module-05/05.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-05",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 6,

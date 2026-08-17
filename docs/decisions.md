@@ -241,3 +241,20 @@ reutilizar a sessão.
 parcial mostrada pela fonte não será chamada de `PUT`; um futuro `PATCH` exigirá
 schema e necessidade próprios. `DELETE` responde `204`, enquanto
 `passive_deletes=True` deixa `ON DELETE RESTRICT` proteger o histórico.
+
+## ADR-025 — Migrações são uma etapa explícita de deploy
+
+**Decisão:** M05/A05 adiciona o Alembic e a baseline
+`0001_library_schema`. O ambiente assíncrono usa o mesmo `Settings`,
+`build_database_url` e `Base.metadata` da aplicação; `alembic.ini` não contém
+credenciais. Constraints recebem nomes estáveis para futuras alterações.
+
+`Base.metadata.create_all` foi removido do lifespan. O processo da API não
+cria nem migra tabelas: `alembic upgrade head` deve ocorrer antes da
+inicialização. A separação torna um deploy incompleto visível e permite contas
+com privilégios diferentes para DDL e operações da aplicação.
+
+Autogenerate será usado apenas como ponto de partida. Cada revisão deve ser
+auditada quanto a preservação de dados, ordem, constraints, compatibilidade e
+reversão. A baseline foi provada em PostgreSQL real com o ciclo upgrade,
+downgrade, novo upgrade e CRUD HTTP.

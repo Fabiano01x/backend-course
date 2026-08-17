@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A04
+## Estado sequencial atual: checkpoint M05/A05
 
 ```text
 Cliente HTTP
@@ -71,12 +71,20 @@ componentes validados de banco
       |                  |
       v                  v
 lifespan             get_session() + yield
-create_all              |
-dispose                 └--> uma AsyncSession por requisição
+dispose                 |
+                        └--> uma AsyncSession por requisição
+
+deploy / desenvolvimento
+          |
+          v
+alembic upgrade head
+          |
+          v
+0001_library_schema -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-04/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-05/lesson-05/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido: os routers consomem a
@@ -109,6 +117,12 @@ projetada por `NOT EXISTS`. ISBN e e-mail duplicados viram `409` após rollback.
 `PUT` substitui os campos editáveis do livro; `DELETE` retorna `204` ou preserva
 histórico por `ON DELETE RESTRICT`.
 
+`alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
+Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
+invariantes; `alembic_version` registra a revisão aplicada. Migrações pertencem
+à etapa de deploy. O lifespan da API não executa DDL e somente descarta a
+engine no encerramento.
+
 ## Separação pedagógica
 
 ```text
@@ -138,10 +152,10 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 
 - Paginação por offset no PostgreSQL ainda pode deslocar itens sob escritas
   concorrentes; cursor permanece adiado até essa garantia ser necessária.
-- Ainda não existem service layer, repository nem migrações versionadas. A
-  sessão é exposta diretamente aos routers que realmente precisam dela.
-- `Base.metadata.create_all` é uma ponte temporária; Alembic deverá removê-la
-  do startup na aula 5.
+- Ainda não existem service layer nem repository. A sessão é exposta
+  diretamente aos routers que realmente precisam dela.
+- Autogenerate fornece somente uma candidata; toda nova revisão exige revisão
+  humana e teste de upgrade e downgrade.
 - `Loan` possui modelo Python, mas ainda não possui rota nem caso de uso.
 - Usuários possuem Create e Read; Update e Delete ainda não foram exigidos pelo
   projeto. Livros possuem o ciclo CRUD completo.
@@ -157,5 +171,5 @@ rotas modulares
     → contrato OpenAPI auditado
 ```
 
-Migrações versionadas continuam na próxima aula; autenticação permanece fora
-do escopo deste módulo.
+Transações de empréstimo continuam na próxima aula; autenticação permanece
+fora do escopo deste módulo.
