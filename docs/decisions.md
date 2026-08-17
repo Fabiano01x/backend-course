@@ -76,9 +76,10 @@ validação. Commits do Codex usam staging por caminhos e nunca incluem
 ## ADR-010 — Dependências resolvidas dos checkpoints
 
 **Decisão:** `pyproject.toml` declara faixas compatíveis; o ambiente aprovado é
-registrado nos `requirements.lock` dos checkpoints. O checkpoint 03 foi
-executado com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Uvicorn
-0.52.3, HTTPX 0.28.1 e pytest 8.4.2.
+registrado nos `requirements.lock` dos checkpoints. O checkpoint 05 foi
+executado com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Pydantic
+Settings 2.14.2, python-dotenv 1.2.3, Uvicorn 0.52.3, HTTPX 0.28.1 e pytest
+8.4.2.
 
 Os testes HTTP usam `httpx.AsyncClient` com transporte ASGI. Isso testa as rotas
 assíncronas diretamente e evita depender da ponte síncrona de `TestClient`.
@@ -126,3 +127,14 @@ ordenação são enumerados explicitamente.
 SQLAlchemy e `fastapi-pagination`, presentes na fonte, não entram no Módulo 4.
 O contrato será traduzido para consultas persistentes no Módulo 5, quando for
 possível avaliar custo, contagem e estratégia de paginação com um banco real.
+
+## ADR-016 — Configurar somente necessidades existentes
+
+**Decisão:** a aula 5 introduz `pydantic-settings` para nome, versão, ambiente,
+debug e limites de paginação. Não declara URL de banco, JWT ou origens CORS
+antes que esses consumidores existam. `.env` é local e ignorado; o arquivo
+versionado é `.env.example`, sem segredos.
+
+Uma instância global e congelada de `Settings` é aceita temporariamente para
+tornar visível o custo de substituição em testes. A aula 6 a trocará por uma
+dependência cacheada. O endpoint `/info` nunca deve serializar segredos.

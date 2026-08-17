@@ -8,7 +8,8 @@ module-04/
 ├── lesson-01/
 ├── lesson-02/
 ├── lesson-03/
-└── lesson-04/
+├── lesson-04/
+└── lesson-05/
 ```
 
 Um checkpoint novo deve partir do anterior, introduzir apenas o conceito da

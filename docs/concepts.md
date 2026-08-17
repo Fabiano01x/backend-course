@@ -79,3 +79,24 @@ concluídas.
 - `total` representa a quantidade depois dos filtros e antes do recorte.
 - O limite de consistência do offset em coleções mutáveis foi declarado; cursor
   será considerado com persistência real.
+
+## Pydantic Settings
+
+- Introduzido: Módulo 4 / aula 5.
+- `Settings` centraliza nome, versão, ambiente, debug e limites de paginação.
+- O prefixo externo é `LIBRARY_`; argumentos explícitos prevalecem sobre
+  variáveis do processo, que prevalecem sobre `.env` e defaults.
+- `.env` é ignorado pelo Git; `.env.example` contém apenas exemplos seguros.
+- Campos isolados usam `Field`; `model_validator` garante que o tamanho padrão
+  não supere o máximo.
+- A configuração é congelada depois de validada e uma inconsistência impede a
+  inicialização.
+- O objeto global `settings` é temporário e será substituído por dependência
+  cacheada na aula 6.
+
+## Configuração pública
+
+- `GET /info` expõe somente nome, versão, ambiente e debug por meio de
+  `AppInfo`.
+- Variáveis de ambiente não são tratadas como cofre de segredos.
+- Banco, JWT e outras configurações sem consumidor real continuam adiados.

@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint da aula 04
+## Estado sequencial atual: checkpoint da aula 05
 
 ```text
 Cliente HTTP
@@ -25,15 +25,27 @@ FastAPI (app/main.py)
                                   |
                                   v
                       coleções temporárias em memória
+
+defaults + .env + variáveis do processo
+                  |
+                  v
+          Settings (app/config.py)
+             |       |       |
+             v       v       v
+          FastAPI  /info  limites de /books
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-04/lesson-04/`. `app/main.py` cria a aplicação e
+`reference/checkpoints/module-04/lesson-05/`. `app/main.py` cria a aplicação e
 inclui os routers; cada módulo em `app/routers/` concentra um grupo de rotas.
 `schemas.py` declara os contratos e `data.py` guarda estado temporário
 reinicializável. A listagem de livros aplica seu pipeline diretamente no router
 porque ainda existe uma única consulta simples. O piloto anterior continua
 preservado separadamente.
+
+`config.py` valida fontes externas e cria uma instância global congelada.
+`main.py`, `books.router` e `system.router` importam essa instância. Esse
+acoplamento é temporário e fornece o problema concreto da aula 6.
 
 ## Separação pedagógica
 

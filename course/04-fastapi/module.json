@@ -52,7 +52,7 @@
       "summary": "Retire configurações do código e valide-as com Pydantic Settings.",
       "sources": ["source/module-04/07.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-05",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 6,
