@@ -35,14 +35,15 @@ python3 scripts/import_grasp.py
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './reference/checkpoints/module-05/lesson-02[dev]'
+.venv/bin/python -m pip install -e './reference/checkpoints/module-05/lesson-03[dev]'
 ```
 
 ## Executar a API
 
 ```bash
+docker compose -f reference/checkpoints/module-05/lesson-03/compose.yaml up -d --wait
 .venv/bin/python -m uvicorn app.main:app --reload \
-  --app-dir reference/checkpoints/module-05/lesson-02
+  --app-dir reference/checkpoints/module-05/lesson-03
 ```
 
 Documentação interativa: `http://127.0.0.1:8000/docs`.
@@ -51,8 +52,8 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 
 ```bash
 .venv/bin/python -m pytest -q tests
-PYTHONPATH=reference/checkpoints/module-05/lesson-02 \
-  .venv/bin/python -m pytest -q reference/checkpoints/module-05/lesson-02/tests
+PYTHONPATH=reference/checkpoints/module-05/lesson-03 \
+  .venv/bin/python -m pytest -q reference/checkpoints/module-05/lesson-03/tests
 .venv/bin/python scripts/validate_course.py
 ```
 

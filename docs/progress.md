@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 / aula 02 concluída
+Estado: Módulo 5 / aula 03 concluída
 
-Última aula concluída: M05/A02
+Última aula concluída: M05/A03
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 / aula 02 concluída
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; aulas 1–2 e checkpoints concluídos.
+- Sequência autoral do Módulo 5 definida; aulas 1–3 e checkpoints concluídos.
 
 ## Conceitos incorporados
 
@@ -44,14 +44,17 @@ Estado: Módulo 5 / aula 02 concluída
   integridade referencial, constraints e índice único parcial.
 - Introduzidos em M05/A02: `DeclarativeBase`, `Mapped`, `mapped_column`, modelos
   tipados, chaves estrangeiras, relacionamentos e association object.
+- Introduzidos em M05/A03: `AsyncEngine`, `async_sessionmaker`, `AsyncSession`,
+  driver `asyncpg`, uma sessão por requisição, lifespan e PostgreSQL com
+  Docker Compose.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A02.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A03.
 - Livros, usuários e rotas operacionais possuem routers separados.
-- Persistência continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A02.
+- O CRUD de domínio continua em memória, de forma deliberadamente temporária.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A03.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -74,17 +77,20 @@ Estado: Módulo 5 / aula 02 concluída
   `books`, `loans` e invariantes testadas, ainda sem instalar ORM.
 - O checkpoint M05/A02 adiciona modelos SQLAlchemy 2 que compilam o mesmo DDL
   PostgreSQL, sem criar engine ou abrir conexão.
+- O checkpoint M05/A03 adiciona configuração segura de URL, engine e fábrica
+  assíncronas, sessão por requisição, lifecycle do pool, PostgreSQL local e
+  `GET /health/database` com uma consulta real.
 
 ## Pendências
 
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
-- Manter PDF e autenticação fora deste módulo; Docker entra somente quando a
-  necessidade de executar PostgreSQL localmente aparecer na aula 3.
+- Manter PDF e autenticação fora deste módulo.
+- Remover o `create_all` temporário quando Alembic entrar na aula 5.
 - Manter validador, retomada e gerador independentes do nome temático dos
   diretórios de módulo.
 
 ## Próxima etapa
 
-Produzir M05/A03 configurando PostgreSQL, engine assíncrona e uma sessão por
-requisição, com configuração segura e testes isolados.
+Produzir M05/A04 substituindo o estado em memória dos livros por consultas e
+escritas ORM assíncronas, preservando os contratos HTTP existentes.

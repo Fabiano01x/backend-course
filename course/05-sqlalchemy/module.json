@@ -32,7 +32,7 @@
       "summary": "Configure engine, fábrica e uma sessão isolada por requisição.",
       "sources": ["source/module-05/03.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-03",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 4,

@@ -182,4 +182,19 @@ concluídas.
 - `Loan` usa association object porque a relação possui `borrowed_at`, `due_at`
   e `returned_at`.
 - O metadata preserva constraints nomeadas e o índice parcial PostgreSQL.
-- Engine, sessão e consultas continuam adiadas para a próxima necessidade.
+- A separação entre schemas Pydantic e modelos ORM continua permanente.
+
+## PostgreSQL assíncrono e sessões
+
+- Introduzido: Módulo 5 / aula 3.
+- `URL.create()` recebe os componentes separadamente e evita interpretar `@`,
+  `/` e outros caracteres da senha como estrutura da URL.
+- `create_async_engine()` configura o dialeto `postgresql+asyncpg`; conexões
+  são obtidas somente quando existe I/O.
+- `async_sessionmaker` é a fábrica compartilhada; `AsyncSession` é criada e
+  fechada por requisição por uma dependência com `yield`.
+- A engine pertence ao ciclo da aplicação e é descartada no shutdown.
+- `GET /health/database` executa `SELECT 1`; `session.is_active` não comprova
+  conectividade com o servidor.
+- `Base.metadata.create_all` no startup é uma ponte temporária de
+  desenvolvimento, não uma migração. Alembic a substituirá na aula 5.

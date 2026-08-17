@@ -207,3 +207,19 @@ do metadata com o dialeto PostgreSQL prova tipos, constraints, chaves e o
 Schemas Pydantic permanecem contratos HTTP separados. `Loan` é um association
 object completo; não usamos `secondary` porque a associação possui atributos.
 Estratégias de carregamento também não são antecipadas nesta aula.
+
+## ADR-023 — Engine pertence à aplicação; sessão pertence à requisição
+
+**Decisão:** M05/A03 cria a engine `postgresql+asyncpg` na fábrica da aplicação
+e a guarda em `app.state` junto da `async_sessionmaker`. `get_session` cria uma
+`AsyncSession` por execução da dependência e o contexto assíncrono garante seu
+fechamento. O lifespan libera o pool no shutdown.
+
+A URL é criada com `URL.create()` a partir de campos validados para que senhas
+com caracteres especiais não sejam reinterpretadas. `SecretStr` reduz exposição
+acidental, mas não transforma variáveis de ambiente em cofre de segredos.
+
+`GET /health/database` executa `SELECT 1`: consultar `session.is_active` apenas
+inspecionaria estado local. `create_all` no startup é aceito como ponte curta e
+explicitamente temporária; a aula de Alembic deverá removê-lo. Livros e usuários
+ainda usam memória para que a conversão do CRUD permaneça o problema da aula 4.
