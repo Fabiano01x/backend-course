@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: aula 06 concluída
+Estado: aula 07 concluída
 
-Última aula processada: 06
+Última aula processada: 07
 
 ## Fonte
 
@@ -16,8 +16,8 @@ Estado: aula 06 concluída
 - Aula piloto preservada como registro metodológico em `reference/pilot/`.
 - Tema contínuo inspirado no Grasp e gerador HTML responsivo concluídos.
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
-- Aulas 1–6 e seus checkpoints executáveis concluídos.
-- Aulas 7 e 8 ainda não foram escritas.
+- Aulas 1–7 e seus checkpoints executáveis concluídos.
+- Aula 8 ainda não foi escrita.
 
 ## Conceitos incorporados
 
@@ -33,14 +33,16 @@ Estado: aula 06 concluída
   precedência, validação cruzada e configuração pública em `AppInfo`.
 - Introduzidos na aula 6: `Depends`, providers, `Annotated`, `lru_cache`,
   overrides em testes e ciclo setup/teardown com `yield`.
+- Introduzidos na aula 7: same-origin policy, CORS, preflight, allowlists,
+  headers defensivos, HSTS condicional e fábrica de aplicação.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` cria e compõe a aplicação do checkpoint 06.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint 07.
 - Livros, usuários e rotas operacionais possuem routers separados.
 - Persistência continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint 06.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint 07.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -54,15 +56,18 @@ Estado: aula 06 concluída
   consomem uma instância global e validada de `Settings`.
 - O checkpoint 06 remove a instância global; endpoints recebem `AppSettings` e
   testes substituem `get_settings` sem recarregar a aplicação.
+- O checkpoint 07 cria `create_app(settings)`, configura CORS com allowlists e
+  adiciona headers defensivos. HSTS exige produção e HTTPS; Swagger e ReDoc
+  permanecem funcionais sem uma CSP genérica.
 
 ## Pendências
 
-- Produzir as aulas restantes em ordem, começando pela aula 7.
+- Produzir a aula 8 e seu checkpoint a partir do estado da aula 7.
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
 - Manter PDF, SQLAlchemy, autenticação e Docker fora deste marco.
 
 ## Próxima etapa
 
-Produzir a aula 7 a partir do checkpoint 06. Configurar CORS e headers conforme
-o ambiente, preservando Swagger e ReDoc e condicionando HSTS a HTTPS/produção.
+Produzir a aula 8 a partir do checkpoint 07. Auditar e refinar o contrato
+OpenAPI exposto por schemas, routers e metadados, encerrando o Módulo 4.

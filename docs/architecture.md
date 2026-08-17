@@ -1,9 +1,15 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint da aula 06
+## Estado sequencial atual: checkpoint da aula 07
 
 ```text
 Cliente HTTP
+    |
+    v
+SecurityHeadersMiddleware
+    |
+    v
+CORSMiddleware (origens explícitas por ambiente)
     |
     v
 FastAPI (app/main.py)
@@ -30,17 +36,18 @@ defaults + .env + variáveis do processo
                   |
                   v
        load_settings() + lru_cache
-             |               |
-             v               v
-      startup FastAPI    get_settings() + Depends
-                              |
-                              +--> /info
-                              └--> limites de /books
+             |                         |
+             v                         v
+  create_app() + middlewares     get_settings() + Depends
+                                        |
+                                        +--> /info
+                                        └--> limites de /books
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-04/lesson-06/`. `app/main.py` cria a aplicação e
-inclui os routers; cada módulo em `app/routers/` concentra um grupo de rotas.
+`reference/checkpoints/module-04/lesson-07/`. `app/main.py` cria a aplicação,
+configura os middlewares e inclui os routers; cada módulo em `app/routers/`
+concentra um grupo de rotas.
 `schemas.py` declara os contratos e `data.py` guarda estado temporário
 reinicializável. A listagem de livros aplica seu pipeline diretamente no router
 porque ainda existe uma única consulta simples. O piloto anterior continua
@@ -48,7 +55,11 @@ preservado separadamente.
 
 `config.py` declara o contrato sem criar instância. `dependencies.py` separa o
 carregador cacheado do provider injetável. Startup chama o carregador; endpoints
-recebem o provider por `Depends`.
+recebem o provider por `Depends`. `create_app(settings)` torna testáveis as
+políticas de startup. CORS aceita apenas origens, métodos e headers declarados;
+o middleware externo aplica headers defensivos inclusive ao preflight. HSTS
+exige simultaneamente produção e HTTPS, enquanto CSP permanece adiada para não
+quebrar Swagger e ReDoc com uma política genérica.
 
 ## Separação pedagógica
 

@@ -117,3 +117,26 @@ concluídas.
 - Modelo de ciclo: setup → `yield` → consumidor → `finally`/teardown.
 - O fechamento deve ficar em `finally` para também ocorrer em falhas.
 - A sessão de banco permanece apenas como ponte conceitual até o Módulo 5.
+
+## CORS e preflight
+
+- Introduzido: Módulo 4 / aula 7.
+- CORS é uma política do navegador; não autentica clientes nem impede que
+  outros programas chamem a API.
+- Origens permitidas são explícitas e vêm de `Settings`; wildcard é recusado
+  porque a API permite credenciais.
+- Métodos e headers também formam uma lista permitida explícita.
+- O preflight `OPTIONS` deve receber tanto os headers CORS quanto os headers
+  defensivos da aplicação.
+
+## Headers de segurança
+
+- Introduzido: Módulo 4 / aula 7.
+- Um middleware adiciona `X-Content-Type-Options`, `X-Frame-Options`,
+  `Referrer-Policy` e `Permissions-Policy` a todas as respostas.
+- HSTS só é emitido quando `environment=production` e `https_enabled=true`.
+- Nenhuma CSP genérica é aplicada: `/docs` e `/redoc` continuam disponíveis,
+  e uma política futura deverá ser projetada a partir dos recursos realmente
+  usados pelas interfaces.
+- `create_app(settings)` permite testar políticas definidas na inicialização
+  sem depender de reimportação ou estado global.

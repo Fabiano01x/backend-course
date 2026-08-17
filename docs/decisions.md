@@ -58,9 +58,10 @@ necessário envolver toda coroutine aguardada em uma task.
 
 ## ADR-008 — Segurança compatível com o ambiente
 
-**Decisão:** HSTS será habilitado apenas quando a aplicação estiver em produção
-sob HTTPS. Uma CSP genérica não será copiada sem testar `/docs` e `/redoc`, pois
-pode bloquear os recursos das interfaces.
+**Decisão:** HSTS é habilitado apenas quando a aplicação está em produção e
+HTTPS foi declarado ativo. Uma CSP genérica não foi copiada; `/docs` e `/redoc`
+são testados sem ela, pois uma política arbitrária pode bloquear recursos das
+interfaces.
 
 ## ADR-009 — Git e commits são obrigatórios
 
@@ -149,3 +150,14 @@ aplicação, chamam o carregador diretamente e não fingem ser request-scoped.
 O padrão de setup/teardown com `yield` é ensinado, mas nenhum recurso artificial
 é incorporado à Library API. Uma sessão real ocupará essa fronteira somente
 quando engine, transações e persistência existirem.
+
+## ADR-018 — Políticas de startup usam uma fábrica de aplicação
+
+**Decisão:** `create_app(settings)` compõe middlewares e routers; `app` continua
+sendo a instância pronta para o servidor. CORS e HSTS são políticas decididas
+na inicialização, portanto recebem `Settings` diretamente em vez de usar
+`Depends`, que pertence ao ciclo de requisição.
+
+O middleware de headers defensivos envolve o middleware CORS para que também
+as respostas de preflight recebam esses headers. Origens, métodos e headers
+permitidos permanecem explícitos; wildcard é rejeitado com credenciais.

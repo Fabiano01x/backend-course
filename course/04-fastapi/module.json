@@ -72,7 +72,7 @@
       "summary": "Configure CORS e headers de segurança de acordo com o ambiente.",
       "sources": ["source/module-04/06.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-07",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 8,
