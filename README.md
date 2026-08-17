@@ -35,14 +35,14 @@ python3 scripts/import_grasp.py
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './reference/pilot/module-04/lesson-03[dev]'
+.venv/bin/python -m pip install -e './reference/checkpoints/module-04/lesson-03[dev]'
 ```
 
 ## Executar a API
 
 ```bash
 .venv/bin/python -m uvicorn app.main:app --reload \
-  --app-dir reference/pilot/module-04/lesson-03
+  --app-dir reference/checkpoints/module-04/lesson-03
 ```
 
 Documentação interativa: `http://127.0.0.1:8000/docs`.
@@ -50,7 +50,7 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 ## Validar
 
 ```bash
-.venv/bin/python -m pytest -q tests reference/pilot/module-04/lesson-03/tests
+.venv/bin/python -m pytest -q tests reference/checkpoints/module-04/lesson-03/tests
 .venv/bin/python scripts/validate_course.py
 ```
 
@@ -77,8 +77,8 @@ com a referência correspondente:
 python3 scripts/compare_checkpoint.py --module 4 --lesson 1
 ```
 
-O piloto da aula 3 não é um checkpoint sequencial: as aulas 1 e 2 ainda serão
-produzidas antes que o checkpoint definitivo da aula 3 seja criado.
+O protótipo anterior à sequência permanece em `reference/pilot/` somente como
+registro metodológico. Para estudo e comparação, use sempre os checkpoints.
 
 ## Commits
 

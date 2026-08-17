@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: aula 02 concluída
+Estado: aula 03 concluída
 
-Última aula processada: 02
+Última aula processada: 03
 
 ## Fonte
 
@@ -13,11 +13,11 @@ Estado: aula 02 concluída
 ## Conteúdo autoral
 
 - Ordem pedagógica do Módulo 4 definida.
-- Aula piloto produzida: `course/04-fastapi/03-apirouter.md`.
+- Aula piloto preservada como registro metodológico em `reference/pilot/`.
 - Tema contínuo inspirado no Grasp e gerador HTML responsivo concluídos.
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
-- Aulas 1 e 2 e seus checkpoints executáveis concluídos.
-- Aulas 4–8 ainda não foram escritas; aula 3 permanece como piloto.
+- Aulas 1, 2 e 3 e seus checkpoints executáveis concluídos.
+- Aulas 4–8 ainda não foram escritas.
 
 ## Conceitos incorporados
 
@@ -30,25 +30,27 @@ Estado: aula 02 concluída
 
 ## Arquitetura atual
 
-- A solução atual foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` cria e compõe a aplicação piloto.
+- A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
+- `main.py` cria e compõe a aplicação do checkpoint 03.
 - Livros, usuários e saúde possuem routers separados.
 - Persistência continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado no `requirements.lock` do piloto.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint 03.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
 - O checkpoint 02 mantém rotas diretas, adiciona `schemas.py`, estado
   reinicializável e operações de criação/detalhe.
+- O checkpoint 03 preserva esses contratos e move saúde, livros e usuários
+  para routers próprios, registrados explicitamente em `main.py`.
 
 ## Pendências
 
-- Produzir as aulas em ordem, começando pela nova aula 1.
+- Produzir as aulas restantes em ordem, começando pela aula 4.
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
 - Manter PDF, SQLAlchemy, autenticação e Docker fora deste marco.
 
 ## Próxima etapa
 
-Reconstruir a aula 3 a partir do checkpoint 02. Mover rotas para `APIRouter`,
-preservar os contratos HTTP e substituir o piloto pelo checkpoint definitivo.
+Produzir a aula 4 a partir do checkpoint 03. Introduzir filtros, ordenação e
+paginação na coleção em memória, preservando os routers e contratos existentes.

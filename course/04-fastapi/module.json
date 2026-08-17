@@ -32,7 +32,7 @@
       "summary": "Separe as rotas por domínio sem alterar o contrato da API.",
       "sources": ["source/module-04/02.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-03",
-      "status": "pilot"
+      "status": "complete"
     },
     {
       "number": 4,

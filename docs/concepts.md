@@ -1,8 +1,7 @@
 # Registro de conceitos
 
-Este arquivo registra o que já faz parte do estado cumulativo. Os conceitos das
-aulas 1 e 2 aparecem como **baseline do piloto**; suas aulas completas ainda não
-foram produzidas.
+Este arquivo registra o que já faz parte do estado cumulativo das aulas
+concluídas.
 
 ## FastAPI
 
@@ -45,7 +44,7 @@ foram produzidas.
 
 ## APIRouter
 
-- Introduzido: Módulo 4 / nova aula 3.
+- Introduzido: Módulo 4 / aula 3.
 - Estado: incorporado permanentemente.
 - Rotas de livros ficam em `books.router`, usuários em `users.router` e rotas
   operacionais em `system.router`.

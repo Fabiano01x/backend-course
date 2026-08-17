@@ -1,15 +1,9 @@
-# Aula 03 — Crescendo sem um `main.py` monolítico
+# Crescendo sem um `main.py` monolítico
 
 > **Origem e adaptação:** esta aula reorganiza o conteúdo de
 > [Building Modular FastAPI Apps with Routers](../../source/module-04/02.md).
 > O domínio Library API, a progressão problema → refatoração, os testes e as
 > decisões arquiteturais são complementações didáticas deste curso.
-
-> **Status do piloto:** esta aula valida o formato, mas ainda não deve ser usada
-> como etapa 3 da sua implementação manual. As novas aulas 1 e 2 serão produzidas
-> primeiro; depois, esta aula será reconstruída sobre o checkpoint 02.
-
-## Onde estamos
 
 A Library API já responde requisições de livros e usuários. Na aula anterior,
 substituímos dicionários sem contrato por modelos Pydantic:
@@ -31,6 +25,11 @@ O comportamento funciona, mas todas as rotas ainda estão declaradas em
 dividem o mesmo arquivo.
 
 ## O problema
+
+!!! problem "O contrato funciona, mas o arquivo perdeu o foco"
+    `main.py` cria a aplicação e também conhece operações de saúde, livros e
+    usuários. Cada domínio novo aumenta o arquivo e faz mudanças independentes
+    disputarem o mesmo ponto do projeto.
 
 Observe uma versão reduzida do estado anterior:
 
@@ -90,6 +89,15 @@ Organização não é apenas estética. Ela afeta:
 Copiar prefixos também abre espaço para inconsistências como `/book`,
 `/books` e `/books/` representando a mesma coleção.
 
+!!! resource "Leitura — aplicações maiores com vários arquivos"
+    Leia [Bigger Applications — Multiple Files](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
+    na documentação oficial do FastAPI.
+
+    !!! guidance "Orientação"
+        Concentre-se em `APIRouter`, `prefix`, `tags` e `include_router`. A
+        seção também antecipa dependências no router; elas serão estudadas na
+        aula 6, quando o projeto tiver um problema concreto para resolvê-las.
+
 ## O conceito
 
 `APIRouter` é um agrupador de operações HTTP. Sua interface para declarar uma
@@ -127,19 +135,20 @@ da aplicação.
 
 ## Modelo mental
 
-Pense em cada router como um conjunto de tomadas preparado por uma equipe. O
-`main.py` é o quadro que conecta esses conjuntos à aplicação:
+!!! mental-model "Routers são conjuntos; a aplicação é o quadro"
+    Pense em cada router como um conjunto de tomadas preparado por uma equipe.
+    O `main.py` é o quadro que conecta esses conjuntos à aplicação:
 
-```text
-books.router  ──┐
-users.router  ──┤
-system.router ──┼──> FastAPI ──> servidor HTTP
-                  |
-             include_router
-```
+    ```text
+    books.router  ──┐
+    users.router  ──┤
+    system.router ──┼──> FastAPI ──> servidor HTTP
+                      |
+                 include_router
+    ```
 
-O router organiza e descreve rotas. Ele não cria um novo servidor e não
-substitui a instância de `FastAPI`.
+    O router organiza e descreve rotas. Ele não cria um novo servidor e não
+    substitui a instância de `FastAPI`.
 
 ## Exemplo mínimo
 
@@ -167,9 +176,9 @@ prefix do router    caminho da operação    caminho final
 /messages        +  ""                    =  /messages
 ```
 
-> **Exemplo isolado:** no projeto principal, o router fica em seu próprio
-> módulo. Declará-lo ao lado de `app` aqui reduz o código para destacar apenas
-> registro e inclusão.
+!!! guidance "Exemplo isolado"
+    No projeto principal, o router fica em seu próprio módulo. Declará-lo ao
+    lado de `app` aqui reduz o código para destacar apenas registro e inclusão.
 
 ## Entendendo o código
 
@@ -180,20 +189,20 @@ adiciona uma descrição de operação ao objeto `router`. Depois,
 Isso acontece na inicialização, não a cada requisição. Durante uma requisição,
 FastAPI já conhece o caminho, os tipos, o status e o modelo de resposta.
 
-### Correção técnica sobre pacotes
-
-A fonte chama os arquivos `__init__.py` de cruciais para que diretórios sejam
-pacotes. Eles continuam sendo uma escolha explícita e recomendada neste projeto,
-mas Python moderno também possui *namespace packages*, que podem funcionar sem
-`__init__.py`. Aqui usamos o arquivo para deixar a fronteira do pacote clara e
-controlar o que ele exporta, não porque toda importação moderna falharia sem ele.
+!!! correction "Correção técnica sobre pacotes"
+    A fonte chama os arquivos `__init__.py` de cruciais para que diretórios
+    sejam pacotes. Eles continuam sendo uma escolha explícita e recomendada
+    neste projeto, mas Python moderno também possui *namespace packages*, que
+    podem funcionar sem `__init__.py`. Aqui usamos o arquivo para deixar a
+    fronteira do pacote clara e controlar o que ele exporta, não porque toda
+    importação moderna falharia sem ele.
 
 ## Aplicando ao projeto
 
 Criamos um módulo por grupo de rotas:
 
 ```text
-reference/pilot/module-04/lesson-03/app/
+reference/checkpoints/module-04/lesson-03/app/
 ├── __init__.py
 ├── data.py
 ├── main.py
@@ -255,9 +264,11 @@ app.include_router(users.router)
 ```
 
 Os arquivos executáveis podem ser consultados em
-[referência piloto](../../reference/pilot/module-04/lesson-03/app/).
+[checkpoint da aula 3](../../reference/checkpoints/module-04/lesson-03/app/).
 
-## Antes
+## Antes e depois
+
+### Antes
 
 ```text
 app/main.py
@@ -271,7 +282,7 @@ app/main.py
 
 Uma alteração em qualquer domínio exigia editar o mesmo arquivo.
 
-## Depois
+### Depois
 
 ```text
 app/main.py
@@ -287,7 +298,7 @@ app/routers/system.py
 └── GET /health
 ```
 
-## O que mudou
+### O que mudou
 
 | Antes | Depois |
 |---|---|
@@ -333,20 +344,20 @@ Na raiz do repositório, prepare o ambiente uma vez:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './reference/pilot/module-04/lesson-03[dev]'
+.venv/bin/python -m pip install -e './reference/checkpoints/module-04/lesson-03[dev]'
 ```
 
 Execute os testes:
 
 ```bash
-.venv/bin/python -m pytest -q reference/pilot/module-04/lesson-03/tests
+.venv/bin/python -m pytest -q reference/checkpoints/module-04/lesson-03/tests
 ```
 
 Inicie a API:
 
 ```bash
 .venv/bin/python -m uvicorn app.main:app --reload \
-  --app-dir reference/pilot/module-04/lesson-03
+  --app-dir reference/checkpoints/module-04/lesson-03
 ```
 
 Teste algumas operações:
@@ -398,7 +409,10 @@ mínimo pode usar `app.get()` somente se declarar que está isolando um conceito
 Separar rotas não exige criar services, repositories ou interfaces. Essas
 abstrações aparecerão quando o projeto revelar problemas que as justifiquem.
 
-## Exercício guiado
+## Exercícios
+
+<details markdown="1">
+<summary>Exercício guiado — uma rota estática</summary>
 
 Adicione uma operação estática `GET /books/count` ao router de livros.
 
@@ -412,7 +426,20 @@ Por que antes de `/{book_id}`? Porque `count` é um caminho fixo, enquanto
 `{book_id}` é dinâmico. A ordem explícita evita que a leitura do código sugira
 uma ambiguidade e facilita entender as rotas mais específicas primeiro.
 
-## Desafio
+</details>
+
+<details markdown="1">
+<summary>Teste seu entendimento — router versus aplicação</summary>
+
+Por que criar `books.router` não basta para publicar suas operações?
+
+Porque o router apenas registra um grupo de operações. A instância de
+`FastAPI` só passa a conhecê-las depois de `app.include_router(books.router)`.
+
+</details>
+
+<details markdown="1">
+<summary>Desafio — prepare o próximo domínio</summary>
 
 Sem criar banco, service ou repository, desenhe um `loans.router` com prefixo
 `/loans` e apenas uma operação `GET` que retorne uma lista vazia tipada.
@@ -425,9 +452,16 @@ Antes de incorporá-lo ao projeto, responda:
 - qual teste prova que o router realmente foi incluído;
 - por que ainda não devemos implementar regras de empréstimo sem persistência.
 
+</details>
+
 ## Checkpoint
 
-Ao terminar esta aula, você deve conseguir explicar:
+!!! checkpoint "Aula 3 concluída"
+    A Library API preserva os contratos da aula 2, mas agora organiza saúde,
+    livros e usuários em routers próprios. `main.py` ficou responsável apenas
+    por criar a aplicação e compor esses routers.
+
+Ao terminar, você deve conseguir explicar:
 
 - a diferença entre `FastAPI` e `APIRouter`;
 - como `prefix` e o caminho do decorator formam o caminho final;
@@ -436,6 +470,12 @@ Ao terminar esta aula, você deve conseguir explicar:
 - por que mover rotas não deve mudar seus contratos Pydantic;
 - por que ainda não criamos services ou repositories;
 - qual regra arquitetural passa a valer nas próximas aulas.
+
+Mensagem sugerida:
+
+```text
+student(m04-l03): organize routes with APIRouter
+```
 
 ## Estado atual do projeto
 

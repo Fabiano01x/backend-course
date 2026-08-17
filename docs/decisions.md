@@ -32,11 +32,12 @@ Brasil. Tradução não substitui nem altera a fonte.
 **Decisão:** `User`, `Book` e posteriormente `Loan` formarão o domínio. O
 primeiro piloto usa livros e usuários; empréstimos aguardam persistência.
 
-## ADR-005 — APIRouter como piloto
+## ADR-005 — APIRouter como mudança permanente
 
-**Decisão:** a nova aula 3 valida a metodologia porque possui dor concreta,
-refatoração visível e efeito arquitetural permanente. Depois dela, todas as
-rotas do projeto usam `APIRouter`.
+**Decisão:** a aula 3 foi inicialmente usada para validar a metodologia porque
+possui dor concreta, refatoração visível e efeito arquitetural permanente. Seu
+checkpoint definitivo parte da aula 2 e preserva os contratos HTTP. Depois
+dela, todas as rotas do projeto usam `APIRouter`.
 
 ## ADR-006 — Banco adiado para o Módulo 5
 
@@ -72,11 +73,11 @@ dependência, ferramenta ou correção técnica recebe commit próprio após tes
 validação. Commits do Codex usam staging por caminhos e nunca incluem
 `student/`. O aluno cria pessoalmente seus commits de prática.
 
-## ADR-010 — Dependências resolvidas do piloto
+## ADR-010 — Dependências resolvidas dos checkpoints
 
 **Decisão:** `pyproject.toml` declara faixas compatíveis; o ambiente aprovado é
-registrado em `reference/pilot/module-04/lesson-03/requirements.lock`. O piloto
-foi executado com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Uvicorn
+registrado nos `requirements.lock` dos checkpoints. O checkpoint 03 foi
+executado com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Uvicorn
 0.52.3, HTTPX 0.28.1 e pytest 8.4.2.
 
 Os testes HTTP usam `httpx.AsyncClient` com transporte ASGI. Isso testa as rotas
@@ -93,10 +94,10 @@ Codex não inclui `student/` em seus commits.
 
 ## ADR-012 — Piloto não é checkpoint sequencial
 
-**Decisão:** a implementação existente da aula 3 fica preservada em
-`reference/pilot/`. Depois que as aulas 1 e 2 forem concluídas, a aula 3 será
-reconstruída a partir do checkpoint 02 e receberá seu checkpoint e commit
-definitivos.
+**Decisão:** a implementação inicial da aula 3 fica preservada em
+`reference/pilot/` como registro metodológico. O checkpoint definitivo foi
+reconstruído a partir do checkpoint 02, sem promover o piloto diretamente à
+sequência cumulativa.
 
 ## ADR-013 — Componentes visuais continuam legíveis no Markdown
 
