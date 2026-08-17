@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "course_id": "3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "course_title": "Python full stack for MNCs",
+  "version_number": 3,
+  "module_number": 4,
+  "module_title": "Modern Python Backend with FastAPI",
+  "course_api_url": "https://paths.grasp.study/api/goals/3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "imported_at": "2026-08-17T00:52:36.402083+00:00",
+  "markdown_derivation": "verbatim lesson.content with one trailing newline",
+  "lessons": [
+    {
+      "position": 1,
+      "lesson_id": "5e120c1f-1963-4756-8dfe-b50b0d979655",
+      "title": "Asynchronous Python: Coroutines and Async/Await",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/5e120c1f-1963-4756-8dfe-b50b0d979655",
+      "json_file": "01.json",
+      "json_sha256": "608126686a350430fafb3e0aa8199aed137d475dc319a6106c5554f67d18902f",
+      "markdown_file": "01.md",
+      "markdown_sha256": "35e106ae7d7c749310fd0ba3f127fbc92ed30bc7fabb9aa46e748e12b3dd02b2"
+    },
+    {
+      "position": 2,
+      "lesson_id": "82f51a01-ce99-43cd-a42d-503fb047a7d2",
+      "title": "Building Modular FastAPI Apps with Routers",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/82f51a01-ce99-43cd-a42d-503fb047a7d2",
+      "json_file": "02.json",
+      "json_sha256": "c783dc8708305ef5380e52abab2976c6342a00439c7d95c8e01e60a24f79139f",
+      "markdown_file": "02.md",
+      "markdown_sha256": "107903d52ffe616bce32ddadb12fb0f30dc92f708613d59f4d3fe6e4081ba25d"
+    },
+    {
+      "position": 3,
+      "lesson_id": "a2b67fda-9877-4b1a-90aa-942dbcafe08b",
+      "title": "Pydantic Data Models for Request/Response Validation",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/a2b67fda-9877-4b1a-90aa-942dbcafe08b",
+      "json_file": "03.json",
+      "json_sha256": "c37d54117bcd63739e61cade3f175bd5e5f68b695ebce81744af308e2177c789",
+      "markdown_file": "03.md",
+      "markdown_sha256": "ea42a0a3fc3b314d5d100daca25fbd8b0af9fcc1c5ba21d623c70922a1fabf4d"
+    },
+    {
+      "position": 4,
+      "lesson_id": "4278a395-679c-4aca-a8ac-8316e7b8c739",
+      "title": "Dependency Injection for Resource Management",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/4278a395-679c-4aca-a8ac-8316e7b8c739",
+      "json_file": "04.json",
+      "json_sha256": "31e65ec71826c5738604306dfedfbeb3c48f1e3af37a678e99fb793f0007e4d7",
+      "markdown_file": "04.md",
+      "markdown_sha256": "c2c05e0525d8d852f2f5dea929cd0b8f9f990d06b22699cd20dc2255f11e7665"
+    },
+    {
+      "position": 5,
+      "lesson_id": "87c9d080-1cb2-4178-939b-fb54b79553c1",
+      "title": "Advanced RESTful API Design",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/87c9d080-1cb2-4178-939b-fb54b79553c1",
+      "json_file": "05.json",
+      "json_sha256": "ad68c85a1aed919cbf61f316c86d8156f98d9ddfb20723d193b4d45c651ad7bc",
+      "markdown_file": "05.md",
+      "markdown_sha256": "dd0257f3cbdb3585ecf15c99587909b2ab5cd216a052985ec3467eba3c1a9249"
+    },
+    {
+      "position": 6,
+      "lesson_id": "2d82927c-ccfc-4537-873f-831ece8013db",
+      "title": "Securing FastAPI: CORS and Essential Headers",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/2d82927c-ccfc-4537-873f-831ece8013db",
+      "json_file": "06.json",
+      "json_sha256": "af090af09d12056cd8b737c95c788bf90ea7bc203089ab57eaf554eec32e84a4",
+      "markdown_file": "06.md",
+      "markdown_sha256": "284068058560b69315dcb8094da59b84bd2673efe0436dad0705621053549187"
+    },
+    {
+      "position": 7,
+      "lesson_id": "8bc68e85-a1cc-4b07-b5d6-77afc91cbae3",
+      "title": "Environment Variables for Configuration and Secrets",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/8bc68e85-a1cc-4b07-b5d6-77afc91cbae3",
+      "json_file": "07.json",
+      "json_sha256": "dea1755e21ed1ab0b4a0d9dc7164ad73a2d9f2340802e2e27ca67c3492540322",
+      "markdown_file": "07.md",
+      "markdown_sha256": "2dfc368a9cf0af5f19b5d1117edb47904bfeb34caaf2d0032ff4079653726937"
+    },
+    {
+      "position": 8,
+      "lesson_id": "33c30a94-ca32-44fe-8dff-9170879ca3ff",
+      "title": "Interactive API Docs with Swagger UI & ReDoc",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/33c30a94-ca32-44fe-8dff-9170879ca3ff",
+      "json_file": "08.json",
+      "json_sha256": "d387950742d9b007fd440175cd9dcffcca6327de9bde261d0309e1f524f94ad5",
+      "markdown_file": "08.md",
+      "markdown_sha256": "f83f0fbc35603d8e370aaa3d4eb9bf32de6b5c9d1fdf7903bd17a2b66217d0ce"
+    }
+  ]
+}
