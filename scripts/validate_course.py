@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PILOT_ROOT = "reference/pilot/module-04/lesson-03"
 REQUIRED_PILOT_HEADINGS = (
     "Onde estamos",
     "O problema",
@@ -120,11 +121,14 @@ class Validation:
         progress = self.require_file("docs/progress.md")
         if progress is not None:
             content = progress.read_text()
-            for marker in ("Estado: piloto concluído", "Última aula processada: 03"):
+            for marker in (
+                "Estado: piloto preservado e fluxo progressivo configurado",
+                "Última aula processada: 03",
+            ):
                 if marker not in content:
                     self.error(f"Marcador ausente em progress.md: {marker}")
 
-        main = self.require_file("project/backend/app/main.py")
+        main = self.require_file(f"{PILOT_ROOT}/app/main.py")
         if main is not None:
             content = main.read_text()
             if "include_router" not in content:
@@ -133,9 +137,9 @@ class Validation:
                 self.error("Rotas de domínio não podem permanecer diretamente em main.py")
 
         for relative_path in (
-            "project/backend/app/routers/books.py",
-            "project/backend/app/routers/users.py",
-            "project/backend/app/routers/system.py",
+            f"{PILOT_ROOT}/app/routers/books.py",
+            f"{PILOT_ROOT}/app/routers/users.py",
+            f"{PILOT_ROOT}/app/routers/system.py",
         ):
             path = self.require_file(relative_path)
             if path is not None and "APIRouter" not in path.read_text():
@@ -152,8 +156,19 @@ class Validation:
             "docs/concepts.md",
             "docs/decisions.md",
             "docs/architecture.md",
+            "student/library-api/README.md",
+            "reference/checkpoints/README.md",
+            "scripts/compare_checkpoint.py",
         ):
             self.require_file(required)
+
+        agents = self.require_file("AGENTS.md")
+        if agents is not None:
+            content = agents.read_text()
+            if "Nunca criar, alterar, formatar, remover" not in content:
+                self.error("AGENTS.md não protege explicitamente a área do aluno")
+            if "Git e commits obrigatórios" not in content:
+                self.error("AGENTS.md não registra a política obrigatória de commits")
         return self.errors
 
 
@@ -173,4 +188,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

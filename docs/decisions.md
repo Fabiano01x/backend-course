@@ -55,21 +55,39 @@ necessário envolver toda coroutine aguardada em uma task.
 sob HTTPS. Uma CSP genérica não será copiada sem testar `/docs` e `/redoc`, pois
 pode bloquear os recursos das interfaces.
 
-## ADR-009 — Git não é requisito do piloto
+## ADR-009 — Git e commits são obrigatórios
 
-**Contexto:** o diretório atual possui um `.git` vazio e somente leitura, não um
-repositório funcional.
+**Contexto:** o marcador inicial não era um repositório funcional. O usuário
+inicializou Git na raiz e o estado anterior à reorganização foi preservado no
+commit `chore: initialize progressive backend course`.
 
-**Decisão:** não executar commits nem alterar esse marcador. Mudanças serão
-mantidas em unidades prontas para commit quando o versionamento estiver
-disponível.
+**Decisão:** toda aula e toda mudança relevante de arquitetura, contrato,
+dependência, ferramenta ou correção técnica recebe commit próprio após testes e
+validação. Commits do Codex usam staging por caminhos e nunca incluem
+`student/`. O aluno cria pessoalmente seus commits de prática.
 
 ## ADR-010 — Dependências resolvidas do piloto
 
 **Decisão:** `pyproject.toml` declara faixas compatíveis; o ambiente aprovado é
-registrado em `project/backend/requirements.lock`. O checkpoint foi executado
-com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Uvicorn 0.52.3, HTTPX
-0.28.1 e pytest 8.4.2.
+registrado em `reference/pilot/module-04/lesson-03/requirements.lock`. O piloto
+foi executado com Python 3.14.6, FastAPI 0.141.1, Pydantic 2.13.4, Uvicorn
+0.52.3, HTTPX 0.28.1 e pytest 8.4.2.
 
 Os testes HTTP usam `httpx.AsyncClient` com transporte ASGI. Isso testa as rotas
 assíncronas diretamente e evita depender da ponte síncrona de `TestClient`.
+
+## ADR-011 — Prática e soluções ficam separadas
+
+**Decisão:** `student/library-api/` é a área manual e protegida do aluno. O Codex
+produz soluções somente em `reference/checkpoints/`, com um snapshot completo e
+executável por aula. As aulas mostram mudanças guiadas; arquivos completos ficam
+nos checkpoints para consulta posterior. O commit de reorganização pode criar
+somente o `README.md` inicial que estabelece essa fronteira; depois dele, o
+Codex não inclui `student/` em seus commits.
+
+## ADR-012 — Piloto não é checkpoint sequencial
+
+**Decisão:** a implementação existente da aula 3 fica preservada em
+`reference/pilot/`. Depois que as aulas 1 e 2 forem concluídas, a aula 3 será
+reconstruída a partir do checkpoint 02 e receberá seu checkpoint e commit
+definitivos.

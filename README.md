@@ -13,9 +13,11 @@ intencionalmente adiados.
 ```text
 source/           material original do Grasp (nunca editar)
 course/           aulas autorais em Markdown
-project/backend/  Library API executável
+student/          área de prática manual protegida
+reference/pilot/  solução usada para validar a metodologia inicial
+reference/checkpoints/ soluções cumulativas, uma por aula concluída
 docs/             mapa curricular e memória operacional
-scripts/          importação e validação
+scripts/          importação, comparação e validação
 tests/            testes das ferramentas do curso
 ```
 
@@ -32,13 +34,14 @@ python3 scripts/import_grasp.py
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './project/backend[dev]'
+.venv/bin/python -m pip install -e './reference/pilot/module-04/lesson-03[dev]'
 ```
 
 ## Executar a API
 
 ```bash
-.venv/bin/python -m uvicorn app.main:app --reload --app-dir project/backend
+.venv/bin/python -m uvicorn app.main:app --reload \
+  --app-dir reference/pilot/module-04/lesson-03
 ```
 
 Documentação interativa: `http://127.0.0.1:8000/docs`.
@@ -46,9 +49,27 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 ## Validar
 
 ```bash
-.venv/bin/python -m pytest -q tests project/backend/tests
+.venv/bin/python -m pytest -q tests reference/pilot/module-04/lesson-03/tests
 .venv/bin/python scripts/validate_course.py
 ```
 
-O estado e a próxima etapa estão registrados em `docs/progress.md`.
+## Praticar sem receber a solução pronta
 
+Escreva seu código em `student/library-api/`. O Codex não altera essa pasta sem
+um pedido explícito seu. Depois de concluir uma aula e criar seu commit, compare
+com a referência correspondente:
+
+```bash
+python3 scripts/compare_checkpoint.py --module 4 --lesson 1
+```
+
+O piloto da aula 3 não é um checkpoint sequencial: as aulas 1 e 2 ainda serão
+produzidas antes que o checkpoint definitivo da aula 3 seja criado.
+
+## Commits
+
+Cada aula ou mudança relevante do curso termina em um commit próprio. O Codex
+commita somente curso, referências e ferramentas; você cria os commits de
+`student/library-api/`.
+
+O estado e a próxima etapa estão registrados em `docs/progress.md`.

@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado atual: checkpoint da aula 03
+## Estado atual: referência piloto da aula 03
 
 ```text
 Cliente HTTP
@@ -19,8 +19,22 @@ FastAPI (app/main.py)
    coleções temporárias em memória
 ```
 
+Essa implementação está preservada em
+`reference/pilot/module-04/lesson-03/`. Ela valida a metodologia, mas ainda não
+é o checkpoint sequencial definitivo, pois as novas aulas 1 e 2 não foram
+produzidas.
+
 `app/main.py` é o ponto de composição: cria `FastAPI` e inclui routers. Cada
 router possui prefixo, tags, status HTTP e modelos de resposta do seu domínio.
+
+## Separação pedagógica
+
+```text
+course/                         mudanças guiadas que o aluno digita
+student/library-api/            implementação manual protegida
+reference/checkpoints/...       solução cumulativa por aula
+reference/pilot/...             protótipo anterior à sequência completa
+```
 
 ## Limites intencionais
 
@@ -44,4 +58,3 @@ rotas modulares
 ```
 
 Banco de dados, autenticação e containers permanecem nos módulos posteriores.
-

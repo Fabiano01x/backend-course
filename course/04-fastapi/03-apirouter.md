@@ -5,6 +5,10 @@
 > O domínio Library API, a progressão problema → refatoração, os testes e as
 > decisões arquiteturais são complementações didáticas deste curso.
 
+> **Status do piloto:** esta aula valida o formato, mas ainda não deve ser usada
+> como etapa 3 da sua implementação manual. As novas aulas 1 e 2 serão produzidas
+> primeiro; depois, esta aula será reconstruída sobre o checkpoint 02.
+
 ## Onde estamos
 
 A Library API já responde requisições de livros e usuários. Na aula anterior,
@@ -189,7 +193,7 @@ controlar o que ele exporta, não porque toda importação moderna falharia sem 
 Criamos um módulo por grupo de rotas:
 
 ```text
-project/backend/app/
+reference/pilot/module-04/lesson-03/app/
 ├── __init__.py
 ├── data.py
 ├── main.py
@@ -251,7 +255,7 @@ app.include_router(users.router)
 ```
 
 Os arquivos executáveis podem ser consultados em
-[project/backend/app](../../project/backend/app/).
+[referência piloto](../../reference/pilot/module-04/lesson-03/app/).
 
 ## Antes
 
@@ -329,19 +333,20 @@ Na raiz do repositório, prepare o ambiente uma vez:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './project/backend[dev]'
+.venv/bin/python -m pip install -e './reference/pilot/module-04/lesson-03[dev]'
 ```
 
 Execute os testes:
 
 ```bash
-.venv/bin/python -m pytest -q project/backend/tests
+.venv/bin/python -m pytest -q reference/pilot/module-04/lesson-03/tests
 ```
 
 Inicie a API:
 
 ```bash
-.venv/bin/python -m uvicorn app.main:app --reload --app-dir project/backend
+.venv/bin/python -m uvicorn app.main:app --reload \
+  --app-dir reference/pilot/module-04/lesson-03
 ```
 
 Teste algumas operações:
@@ -465,4 +470,3 @@ quantos itens podem vir por resposta?
 
 A próxima aula usará query parameters para introduzir filtros, ordenação e
 paginação sem abandonar os routers que acabamos de adotar.
-

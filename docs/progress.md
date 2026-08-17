@@ -1,6 +1,6 @@
 # Progresso
 
-Estado: piloto concluído
+Estado: piloto preservado e fluxo progressivo configurado
 
 Última aula processada: 03
 
@@ -23,17 +23,20 @@ Estado: piloto concluído
 
 ## Arquitetura atual
 
-- `main.py` cria e compõe a aplicação.
+- A solução atual foi preservada em `reference/pilot/module-04/lesson-03/`.
+- `main.py` cria e compõe a aplicação piloto.
 - Livros, usuários e saúde possuem routers separados.
 - Persistência continua em memória, de forma deliberadamente temporária.
-- Ambiente resolvido registrado em `project/backend/requirements.lock`.
+- Ambiente resolvido registrado no `requirements.lock` do piloto.
+- `student/library-api/` está reservado para a implementação manual do aluno.
+- Ainda não existem checkpoints sequenciais; o primeiro será criado com a aula 1.
 
 ## Pendências
 
 - Submeter o padrão da aula piloto à avaliação.
 - Depois da aprovação, produzir as aulas em ordem, começando pela nova aula 1.
-- Configurar um repositório Git funcional antes de depender de checkpoints por
-  commit.
+- Encerrar cada aula ou mudança relevante com testes, validação e commit.
+- Nunca alterar ou incluir a área `student/` em commits do Codex.
 - Manter HTML, PDF, SQLAlchemy, autenticação e Docker fora deste marco.
 
 ## Próxima etapa
