@@ -91,8 +91,7 @@ concluídas.
   não supere o máximo.
 - A configuração é congelada depois de validada e uma inconsistência impede a
   inicialização.
-- O objeto global `settings` é temporário e será substituído por dependência
-  cacheada na aula 6.
+- O objeto global da aula 5 foi substituído por dependência cacheada na aula 6.
 
 ## Configuração pública
 
@@ -100,3 +99,21 @@ concluídas.
   `AppInfo`.
 - Variáveis de ambiente não são tratadas como cofre de segredos.
 - Banco, JWT e outras configurações sem consumidor real continuam adiados.
+
+## Dependency Injection
+
+- Introduzido: Módulo 4 / aula 6.
+- `load_settings()` mantém uma instância por processo com `lru_cache`.
+- `get_settings()` é o provider assíncrono; `AppSettings` combina tipo e
+  `Depends`.
+- `/info` e `GET /books` recebem settings durante a requisição.
+- Testes substituem o provider com `app.dependency_overrides` e limpam o
+  override depois de cada caso.
+- Metadados de `FastAPI` pertencem à inicialização e chamam o carregador
+  diretamente; overrides de requisição não reconstroem a aplicação.
+
+## Dependências com yield
+
+- Modelo de ciclo: setup → `yield` → consumidor → `finally`/teardown.
+- O fechamento deve ficar em `finally` para também ocorrer em falhas.
+- A sessão de banco permanece apenas como ponte conceitual até o Módulo 5.

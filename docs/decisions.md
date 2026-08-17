@@ -135,6 +135,17 @@ debug e limites de paginação. Não declara URL de banco, JWT ou origens CORS
 antes que esses consumidores existam. `.env` é local e ignorado; o arquivo
 versionado é `.env.example`, sem segredos.
 
-Uma instância global e congelada de `Settings` é aceita temporariamente para
-tornar visível o custo de substituição em testes. A aula 6 a trocará por uma
+Uma instância global e congelada de `Settings` foi aceita temporariamente para
+tornar visível o custo de substituição em testes. A aula 6 a trocou por uma
 dependência cacheada. O endpoint `/info` nunca deve serializar segredos.
+
+## ADR-017 — DI respeita as fases da aplicação
+
+**Decisão:** `load_settings()` é síncrona e cacheada; `get_settings()` é um
+adaptador assíncrono usado por `Depends`. Endpoints podem receber overrides sem
+reimportar módulos. Metadados e middleware, necessários durante a construção da
+aplicação, chamam o carregador diretamente e não fingem ser request-scoped.
+
+O padrão de setup/teardown com `yield` é ensinado, mas nenhum recurso artificial
+é incorporado à Library API. Uma sessão real ocupará essa fronteira somente
+quando engine, transações e persistência existirem.

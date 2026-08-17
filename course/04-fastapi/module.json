@@ -62,7 +62,7 @@
       "summary": "Injete configurações e prepare dependências substituíveis em testes.",
       "sources": ["source/module-04/04.md", "source/module-04/07.md"],
       "checkpoint": "reference/checkpoints/module-04/lesson-06",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 7,
