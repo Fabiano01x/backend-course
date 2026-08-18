@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M06/A02
+## Estado sequencial atual: checkpoint M06/A03
 
 ```text
 Cliente HTTP
@@ -48,7 +48,19 @@ FastAPI (app/main.py)
     |                         |
     |                         v
     |                  access JWT (15 min)
-    |                  HS256 + claims estritas
+    |                  + cookie refresh HttpOnly
+    |                         |
+    |                         v
+    |                POST /auth/refresh + header CSRF
+    |                         |
+    |                         v
+    |              SELECT digest FOR UPDATE
+    |              INSERT substituto -> UPDATE anterior
+    |              replay -> revoga família
+    |                  --> POST /auth/logout
+    |                         |
+    |                         v
+    |                  revoga família + limpa cookie
     +--> users.router  --> GET /users...
     |                  --> GET /users/{id}
     |                               |
@@ -123,11 +135,12 @@ deploy / desenvolvimento
 alembic upgrade head
           |
           v
-0001_library_schema -> 0002_user_password_hash -> PostgreSQL
+0001_library_schema -> 0002_user_password_hash
+                        -> 0003_refresh_token_rotation -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-06/lesson-02/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-03/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -148,10 +161,11 @@ Testes consultam `/openapi.json` para proteger esse contrato; Swagger UI e
 ReDoc apenas o apresentam de formas diferentes.
 
 `schema.sql` registra o desenho de dados. `app/models.py` traduz `users`,
-`books` e `loans` para metadata SQLAlchemy tipado, incluindo a entidade
-associativa `Loan`. `app/database.py` cria a URL segura, a engine e a fábrica de
-sessões. A fábrica da aplicação aceita esse recurso por argumento, o guarda em
-`app.state` e liga seu startup e shutdown ao lifespan.
+`books`, `loans` e `refresh_tokens` para metadata SQLAlchemy tipado, incluindo a
+entidade associativa `Loan` e a cadeia autorreferente da rotação. `app/database.py`
+cria a URL segura, a engine e a fábrica de sessões. A fábrica da aplicação aceita
+esse recurso por argumento, o guarda em `app.state` e liga seu startup e shutdown
+ao lifespan.
 
 `get_session()` cria uma `AsyncSession` por requisição e fecha o contexto após
 o consumidor. Livros, usuários e autenticação usam esse recurso para leituras
@@ -176,10 +190,11 @@ detalhe de usuário declara `selectinload(User.loans)` encadeado a
 `joinedload(Loan.book)` e usa dois statements fixos. Testes contam as consultas
 executadas e falham se esse orçamento ou a proibição de lazy loading regredir.
 
-`auth.router` concentra cadastro e login local. `POST /auth/register` normaliza
+`auth.router` concentra cadastro, login, refresh e logout. `POST /auth/register` normaliza
 o e-mail e desloca Argon2id para uma worker thread antes de persistir somente
 `password_hash`. `POST /auth/login` consulta o usuário, verifica a senha fora do
-event loop e emite um access JWT de 15 minutos. Conta ausente, senha errada,
+event loop, emite um access JWT de 15 minutos e inicia uma família renovável.
+Conta ausente, senha errada,
 usuário inativo, conta legada e hash inválido produzem o mesmo `401`; os caminhos
 sem hash real usam `DUMMY_PASSWORD_HASH`.
 
@@ -194,6 +209,22 @@ sujeito ao service. A transação então consulta a conta atual, recusa ausênci
 inatividade com `401` e usa o ID autenticado na FK. Essa ordem preserva a única
 fronteira `session.begin()` do caso de uso.
 
+Refresh tokens são valores opacos de 32 bytes aleatórios. Somente SHA-256 entra
+em `refresh_tokens`; o valor bruto é transportado em cookie host-only,
+`HttpOnly`, `SameSite=Strict`, `Path=/auth` e `Secure` em produção. A família
+possui validade absoluta de sete dias.
+
+`RefreshTokenRepository` bloqueia o digest e revoga famílias sem controlar
+commit. `services/sessions.py` mantém a fronteira transacional: insere e faz
+flush do substituto antes de ligar a FK `replaced_by_id` e marcar o elo anterior
+como usado. Uma segunda apresentação encontra `used_at` e revoga a família.
+
+Refresh e logout exigem `X-CSRF-Protection: 1`; navegadores cross-origin precisam
+de preflight e a origem deve ser a própria API ou pertencer à allowlist.
+`HttpOnly` limita extração por XSS, mas não impede um script executado na origem
+confiável de emitir requisições. CORS e CSRF não são apresentados como defesa
+contra XSS.
+
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
 invariantes; `alembic_version` registra a revisão aplicada. Migrações pertencem
@@ -205,8 +236,10 @@ preserva contas criadas antes de M06/A01 sem inventar uma credencial; somente
 `/auth/register` cria novas identidades locais. O downgrade remove a coluna e
 mantém a baseline separada.
 
-M06/A02 não altera o esquema. Access tokens são autocontidos; persistência e
-rotação de sessão aparecem somente com refresh tokens em M06/A03.
+M06/A02 não altera o esquema. A revisão `0003_refresh_token_rotation` cria
+`refresh_tokens`, duas FKs, unicidade de digest/substituição, constraints
+temporais e índices por família e usuário. O downgrade remove somente essa
+tabela e preserva credenciais locais.
 
 ## Separação pedagógica
 
@@ -245,8 +278,11 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   endpoint de coleção separado será necessário quando o volume justificar.
 - Usuários possuem Read; criação pública migrou para `/auth/register`. Update e
   Delete ainda não foram exigidos. Livros possuem o ciclo CRUD completo.
-- O access token expira em 15 minutos e não possui revogação individual. Ainda
-  não existem refresh token, logout, rate limit ou recuperação de senha.
+- O access token expira em 15 minutos e não possui revogação individual. Logout
+  encerra renovação, mas um access JWT emitido continua válido até expirar.
+- Ainda não existem rate limit ou recuperação de senha.
+- O cookie `SameSite=Strict` pressupõe frontend same-site. Um deploy cross-site
+  exige rever transporte, `SameSite=None; Secure` e as camadas CSRF.
 - Apenas a retirada usa a identidade atual. Listagem, devolução e administração
   ganharão regras de permissão quando RBAC tornar essa necessidade explícita.
 
@@ -262,5 +298,5 @@ rotas modulares
 ```
 
 O Módulo 5 encerra com carregamento previsível de relacionamentos. O Módulo 6
-já possui credencial local e access token curto; sessões renováveis formam o
-próximo problema.
+já possui credencial local, access token curto e sessão renovável rotativa;
+autorização por papéis forma o próximo problema.

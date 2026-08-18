@@ -319,3 +319,33 @@ concluídas.
   de `sub`. Enviar o campo antigo falha com `422` por contrato estrito.
 - `401` representa credencial ausente ou inválida. `403` fica reservado para
   identidade válida sem permissão, problema da futura aula de autorização.
+
+## Sessões renováveis, CSRF e XSS
+
+- Introduzido: Módulo 6 / aula 3.
+- Access token permanece JWT autocontido de 15 minutos. Refresh token é opaco,
+  gerado com 32 bytes aleatórios e usado somente para renovar a sessão.
+- O banco persiste SHA-256 do refresh token. Hash rápido é adequado porque a
+  entrada tem alta entropia; senha humana continua exigindo Argon2id.
+- `refresh_tokens` registra UUID, família, usuário, digest, criação,
+  expiração, uso, revogação e substituição. O valor bruto nunca entra no
+  modelo, banco ou JSON.
+- A família possui validade absoluta de sete dias. Rotação não cria sessão
+  deslizante infinita.
+- `SELECT FOR UPDATE` serializa consumo do mesmo elo. Um substituto é inserido
+  antes de a FK `replaced_by_id` ser atualizada; dois flushes pertencem à mesma
+  transação.
+- Apresentar um elo com `used_at` indica replay e revoga toda a família. Isso
+  também trata retries concorrentes como suspeitos de forma deliberada.
+- Login define `library_refresh` com `HttpOnly`, `SameSite=Strict`,
+  `Path=/auth`, host-only, expiração e `Secure` obrigatório em produção.
+- Refresh e logout exigem `X-CSRF-Protection: 1`; o header força preflight em
+  browser cross-origin e `Origin`, quando presente, precisa ser a origem-alvo
+  da API ou pertencer à allowlist.
+- `SameSite` opera por site, não por origin. A política atual presume frontend
+  same-site; outro desenho de deploy exige reavaliar cookie e CSRF.
+- `HttpOnly` impede leitura via `document.cookie`, mas um XSS ainda pode emitir
+  chamadas na origem da aplicação. Encoding por contexto e eliminação de sinks
+  inseguros continuam sendo as defesas primárias contra XSS.
+- Logout e replay encerram renovação, mas access JWTs já emitidos permanecem
+  válidos até no máximo sua expiração de 15 minutos.

@@ -32,7 +32,7 @@
       "summary": "Rotacione refresh tokens, detecte reutilização e combine cookies seguros com defesa CSRF e XSS.",
       "sources": ["source/module-06/02.md", "source/module-06/06.md"],
       "checkpoint": "reference/checkpoints/module-06/lesson-03",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 4,

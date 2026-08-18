@@ -383,3 +383,38 @@ que uma consulta da dependência abra implicitamente uma transação na mesma
 Não foi criada revisão Alembic: tokens são autocontidos e esta etapa não
 persiste sessão. Revogação, renovação, cookie e ameaças do navegador ficam para
 M06/A03; papéis e `403` permanecem para a aula de RBAC.
+
+## ADR-031 — Refresh é opaco, rotativo e ligado ao navegador
+
+**Decisão:** M06/A03 usa refresh tokens opacos com 32 bytes aleatórios. O valor
+bruto existe somente no cookie; `refresh_tokens` armazena SHA-256, família,
+usuário, timestamps e encadeamento. O digest rápido não substitui Argon2id para
+senhas: ele localiza um segredo uniforme de alta entropia.
+
+A revisão `0003_refresh_token_rotation` cria a tabela, constraints, índices e a
+FK autorreferente `replaced_by_id`. Cada login cria uma família com expiração
+absoluta de sete dias. Rotações herdam esse limite em vez de prolongar a sessão
+indefinidamente.
+
+`POST /auth/refresh` bloqueia o digest com `SELECT FOR UPDATE`. A transação
+insere o substituto e executa um primeiro flush; só então marca o anterior como
+usado, liga `replaced_by_id` e faz o segundo flush. Isso respeita a FK sem commit
+intermediário. Duas apresentações concorrentes resultam em uma rotação e uma
+detecção de replay; a segunda revoga toda a família, inclusive o substituto.
+
+O cookie `library_refresh` é host-only, `HttpOnly`, `SameSite=Strict` e limitado
+a `Path=/auth`; produção sempre recebe `Secure`. O perfil assume frontend
+same-site. Refresh e logout exigem `X-CSRF-Protection: 1`, que torna a chamada
+não simples, e recusam `Origin` que não seja a origem-alvo nem pertença à
+allowlist. CORS permanece explícito e com credenciais.
+
+`HttpOnly` limita roubo do refresh token por XSS, mas não impede um script já
+executado na origem confiável de fazer requisições; o header CSRF também não
+resolve XSS. O curso não copia exemplos Flask/Jinja para a API nem inventa uma
+CSP genérica. Encoding por contexto, sanitização quando necessária e frontend
+sem sinks inseguros continuam responsabilidades explícitas.
+
+`POST /auth/logout` revoga somente a família apresentada, é idempotente e
+sempre limpa o cookie. Outras sessões do mesmo usuário não são punidas por um
+replay isolado. Access tokens emitidos antes da revogação continuam válidos por
+até 15 minutos; revogação instantânea não é prometida.
