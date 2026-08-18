@@ -72,7 +72,7 @@
       "summary": "Carregue relações explicitamente e proteja o custo das leituras.",
       "sources": ["source/module-05/07.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-07",
-      "status": "planned"
+      "status": "complete"
     }
   ]
 }

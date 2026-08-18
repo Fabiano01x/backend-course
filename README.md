@@ -5,8 +5,8 @@ for MNCs** em um percurso prático e cumulativo. A fonte original permanece em
 inglês e imutável; o novo curso é escrito em português do Brasil.
 
 O Módulo 4 constrói a fronteira HTTP da Library API ao longo de oito aulas. O
-Módulo 5, agora em andamento, substitui gradualmente o estado em memória por
-persistência relacional. Autenticação e PDF continuam adiados.
+Módulo 5 substitui o estado em memória por persistência relacional e encerra
+com transações e leituras previsíveis. Autenticação e PDF continuam adiados.
 
 ## Estrutura
 
@@ -35,15 +35,15 @@ python3 scripts/import_grasp.py
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './reference/checkpoints/module-05/lesson-04[dev]'
+.venv/bin/python -m pip install -e './reference/checkpoints/module-05/lesson-07[dev]'
 ```
 
 ## Executar a API
 
 ```bash
-docker compose -f reference/checkpoints/module-05/lesson-04/compose.yaml up -d --wait
+docker compose -f reference/checkpoints/module-05/lesson-07/compose.yaml up -d --wait
 .venv/bin/python -m uvicorn app.main:app --reload \
-  --app-dir reference/checkpoints/module-05/lesson-04
+  --app-dir reference/checkpoints/module-05/lesson-07
 ```
 
 Documentação interativa: `http://127.0.0.1:8000/docs`.
@@ -52,8 +52,8 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 
 ```bash
 .venv/bin/python -m pytest -q tests
-PYTHONPATH=reference/checkpoints/module-05/lesson-04 \
-  .venv/bin/python -m pytest -q reference/checkpoints/module-05/lesson-04/tests
+PYTHONPATH=reference/checkpoints/module-05/lesson-07 \
+  .venv/bin/python -m pytest -q reference/checkpoints/module-05/lesson-07/tests
 .venv/bin/python scripts/validate_course.py
 ```
 

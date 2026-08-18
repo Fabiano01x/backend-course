@@ -277,3 +277,23 @@ Disponibilidade continua derivada. Criar um `Loan` ativo a torna falsa;
 preencher `returned_at` a torna verdadeira. Não adicionamos um segundo write em
 `books`, evitando duas fontes de verdade. A concorrência foi validada em
 PostgreSQL real com duas requisições simultâneas: uma confirma e uma conflita.
+
+## ADR-027 — O grafo de leitura e seu custo são explícitos
+
+**Decisão:** M05/A07 configura todas as relações com `lazy="raise"`. Endpoints
+que percorrem relações precisam declarar loaders; nenhum acesso a atributo deve
+iniciar I/O implicitamente. Isso torna esquecimentos visíveis e evita depender
+de lazy loading incompatível com pontos assíncronos sem `await` explícito.
+
+`GET /loans` usa `joinedload` para as referências escalares de usuário e livro,
+resultando em um statement. `GET /users/{id}` usa `selectinload` para a coleção
+de empréstimos e encadeia `joinedload` para os livros, resultando em dois
+statements sem duplicar a linha principal do usuário. `User.loans` ordena por
+identificador para que o histórico não dependa da ordem incidental do banco.
+
+O contrato de listagem ganha resumos relacionados, enquanto retirada e
+devolução preservam a resposta factual simples e não carregam dados que já
+foram informados pelo comando. Testes com eventos do SQLAlchemy impõem os
+orçamentos de consulta e comprovam que um acesso não planejado falha sem emitir
+um statement adicional. Como loaders não mudam o esquema, nenhuma migração foi
+criada.

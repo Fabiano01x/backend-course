@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A06
+## Estado sequencial atual: checkpoint M05/A07
 
 ```text
 Cliente HTTP
@@ -35,18 +35,24 @@ FastAPI (app/main.py)
     |
     +--> books.router  --> GET/POST/PUT/DELETE /books...
     +--> users.router  --> GET/POST /users...
+    |                  --> GET /users/{id}
+    |                               |
+    |                               v
+    |                    selectinload(User.loans)
+    |                    + joinedload(Loan.book)
+    |                         2 statements
     +--> loans.router  --> GET/POST /loans
     |                  --> POST /loans/{id}/return
-    |                               |
-    |                               v
-    |                         Loan service
-    |                    session.begin() boundary
-    |                               |
-    |                               v
-    |                        LoanRepository
-    |                    SELECT ... FOR UPDATE
-    |                        add + flush
-    |                               |
+    |                         |             |
+    |                         v             v
+    |               GET: joinedload     writes: Loan service
+    |                user + book        session.begin() boundary
+    |                 1 statement              |
+    |                                          v
+    |                                   LoanRepository
+    |                               SELECT ... FOR UPDATE
+    |                                   add + flush
+    |                                          |
     +-------------------------------+
                                   |
                                   v
@@ -97,7 +103,7 @@ alembic upgrade head
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-06/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-05/lesson-07/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -135,6 +141,13 @@ Retirada e devolução usam uma fronteira `session.begin()` no service.
 bloqueia o livro com `FOR UPDATE`; o índice parcial permanece como garantia
 final contra dois empréstimos ativos. Disponibilidade muda pela criação ou
 encerramento do fato `Loan`, sem flag redundante em `Book`.
+
+As relações ORM usam `lazy="raise"`, portanto nenhuma serialização pode iniciar
+I/O implicitamente. A listagem de empréstimos declara `joinedload(Loan.user)` e
+`joinedload(Loan.book)` e materializa o contrato enriquecido em um statement. O
+detalhe de usuário declara `selectinload(User.loans)` encadeado a
+`joinedload(Loan.book)` e usa dois statements fixos. Testes contam as consultas
+executadas e falham se esse orçamento ou a proibição de lazy loading regredir.
 
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
@@ -175,8 +188,8 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   foram generalizados para CRUDs simples nem envolvidos por interfaces vazias.
 - Autogenerate fornece somente uma candidata; toda nova revisão exige revisão
   humana e teste de upgrade e downgrade.
-- A listagem de empréstimos retorna apenas fatos e identificadores; relações
-  ainda não são carregadas para evitar I/O implícito.
+- O histórico incluído em `GET /users/{id}` ainda não possui paginação; um
+  endpoint de coleção separado será necessário quando o volume justificar.
 - Usuários possuem Create e Read; Update e Delete ainda não foram exigidos pelo
   projeto. Livros possuem o ciclo CRUD completo.
 
@@ -191,5 +204,5 @@ rotas modulares
     → contrato OpenAPI auditado
 ```
 
-Carregamento previsível de relacionamentos continua na próxima aula;
-autenticação permanece fora do escopo deste módulo.
+O Módulo 5 encerra com carregamento previsível de relacionamentos.
+Autenticação permanece fora do escopo dos checkpoints atuais.

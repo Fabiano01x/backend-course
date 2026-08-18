@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "library-api-course"
+version = "0.15.0"
+description = "Checkpoint M05/A07 da Library API"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.19.1,<2.0",
+  "fastapi>=0.116,<1.0",
+  "pydantic>=2.11,<3.0",
+  "pydantic-settings>=2.14,<3.0",
+  "asyncpg>=0.31,<1.0",
+  "sqlalchemy[asyncio]>=2.0.51,<2.1",
+  "uvicorn>=0.35,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28,<1.0",
+  "pytest>=8.4,<9.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["integration: requer PostgreSQL externo configurado para testes"]

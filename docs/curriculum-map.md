@@ -52,9 +52,9 @@ conteúdo produzido de planejamento aprovado.
 | 4 | ORM CRUD Operations | `source/module-05/04.md` | `select`, create/read/update/delete, schemas, repository, service | 4 e 6 | CRUD persistente; Empréstimos atômicos | Concluído, corrigido e dividido | M05/A04 traduz o contrato simples para SQLAlchemy direto e corrige `PUT`; M05/A06 introduz repository e service somente quando a retirada exige coordenação transacional real. |
 | 5 | Alembic Migrations: Managing Database Schema Changes | `source/module-05/05.md` | revisões, `upgrade`, `downgrade`, autogenerate, `target_metadata` | 5 | Evoluindo o esquema com Alembic | Concluído e corrigido | Autogenerate produz uma migração candidata que deve ser revisada; a aplicação deixa de criar tabelas no startup. A baseline assíncrona foi testada nas duas direções em PostgreSQL real. |
 | 6 | Atomic Writes with Database Transactions | `source/module-05/06.md` | ACID, commit, rollback, Unit of Work, fronteiras transacionais | 6 | Empréstimos atômicos e fronteiras de transação | Concluído, integrado e corrigido | A transação coordena regras, lock e INSERT; disponibilidade deriva do histórico em vez de exigir um segundo write. `AsyncSession` fornece a unidade de trabalho sem uma classe genérica prematura. |
-| 7 | Optimizing Relationship Loading for N+1 Query Prevention | `source/module-05/07.md` | lazy loading, N+1, `selectinload`, `joinedload`, `lazy="raise"` | 7 | Consultas previsíveis sem N+1 | Analisado e corrigido | Em código assíncrono, I/O implícito também pode falhar; as relações serão carregadas explicitamente e o número de consultas será testado. |
+| 7 | Optimizing Relationship Loading for N+1 Query Prevention | `source/module-05/07.md` | lazy loading, N+1, `selectinload`, `joinedload`, `lazy="raise"` | 7 | Consultas previsíveis sem N+1 | Concluído e corrigido | Em código assíncrono, I/O implícito também pode falhar; as relações são carregadas explicitamente, `lazy="raise"` impede surpresas e testes protegem o número real de consultas. |
 
-### Sequência planejada
+### Sequência concluída
 
 1. Do dicionário ao esquema relacional.
 2. Modelos e relações com SQLAlchemy 2.

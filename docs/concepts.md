@@ -256,3 +256,21 @@ concluídas.
 - `POST /loans/{loan_id}/return` preenche `returned_at`; disponibilidade muda
   por derivação do histórico, sem atualizar um flag redundante em `books`.
 - I/O externo não pertence a uma transação de banco curta.
+
+## Carregamento previsível de relacionamentos
+
+- Introduzido: Módulo 5 / aula 7.
+- N+1 é o crescimento de uma consulta inicial mais consultas adicionais por
+  item; mais de uma consulta fixa não caracteriza o problema.
+- `GET /loans` usa `joinedload` para `Loan.user` e `Loan.book`, duas relações
+  muitos-para-um, e mantém o orçamento de um statement.
+- `GET /users/{id}` usa `selectinload(User.loans)` para a coleção e encadeia
+  `joinedload(Loan.book)`, mantendo o orçamento de dois statements.
+- As relações bidirecionais usam `lazy="raise"`; acesso não planejado levanta
+  erro em vez de produzir SQL implícito, especialmente arriscado com
+  `AsyncSession`.
+- Schemas de leitura refletem o grafo necessário sem recursão:
+  `LoanDetailResponse` inclui usuário e livro resumidos; `UserDetailResponse`
+  inclui empréstimos com seus livros.
+- Estratégias de loader não alteram DDL e não exigem nova revisão Alembic.
+- Testes contam statements reais e protegem custo, além de validar conteúdo.

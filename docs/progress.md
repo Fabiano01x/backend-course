@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 / aula 06 concluída
+Estado: Módulo 5 concluído
 
-Última aula concluída: M05/A06
+Última aula concluída: M05/A07
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 / aula 06 concluída
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; aulas 1–6 e checkpoints concluídos.
+- Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 
 ## Conceitos incorporados
 
@@ -55,14 +55,16 @@ Estado: Módulo 5 / aula 06 concluída
 - Introduzidos em M05/A06: ACID, `session.begin`, `flush`, fronteira
   transacional no service, repository sem commit, `SELECT FOR UPDATE`,
   retirada e devolução concorrentes.
+- Introduzidos em M05/A07: N+1, I/O implícito, `joinedload`, `selectinload`,
+  loaders encadeados, `lazy="raise"` e testes de orçamento de consultas.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A06.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A07.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A06.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A07.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -99,16 +101,20 @@ Estado: Módulo 5 / aula 06 concluída
 - O checkpoint M05/A06 adiciona retirada, listagem e devolução. Um service
   controla `session.begin`; um repository focado não confirma transações; lock
   de livro e índice parcial garantem uma retirada ativa sob concorrência.
+- O checkpoint M05/A07 enriquece o histórico com usuário e livro em uma
+  consulta, carrega a coleção do detalhe de usuário em duas consultas fixas e
+  usa `lazy="raise"` para recusar qualquer I/O relacional não planejado.
 
 ## Pendências
 
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
-- Manter PDF e autenticação fora deste módulo.
+- Manter PDF e autenticação fora dos módulos já concluídos.
 - Manter validador, retomada e gerador independentes do nome temático dos
   diretórios de módulo.
 
 ## Próxima etapa
 
-Produzir M05/A07 enriquecendo as leituras de empréstimos com relacionamentos
-carregados explicitamente e testes que detectem N+1 e I/O implícito.
+Nenhuma aula autoral está planejada depois de M05/A07. Antes de iniciar
+autenticação, importar e mapear o módulo-fonte correspondente, preservando os
+checkpoints concluídos da Library API.
