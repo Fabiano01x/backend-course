@@ -27,8 +27,9 @@ concluídas.
 
 - Introduzido: Módulo 4 / aula 2.
 - Estado: incorporado.
-- `BookCreate`/`UserCreate` controlam entrada; `BookResponse`/`UserResponse`
-  controlam saída.
+- `BookCreate` e, desde M06/A01, `RegistrationCreate` controlam entrada;
+  `BookResponse`/`UserResponse` controlam saída. `UserCreate` foi substituído
+  quando o cadastro passou a exigir credencial local.
 - Campos extras são recusados para tornar o contrato explícito.
 - A partir daqui, endpoints de criação não recebem `dict` cru.
 - `StrictSchema` recusa campos extras; campos obrigatórios são anotados sem
@@ -157,7 +158,7 @@ concluídas.
   resposta principal.
 - `ErrorResponse` documenta os `404` realmente produzidos por consultas de
   livro e usuário; o `422` de validação continua gerado pelo FastAPI.
-- `BookCreate` e `UserCreate` publicam exemplos no JSON Schema.
+- `BookCreate` e `RegistrationCreate` publicam exemplos no JSON Schema.
 - Testes inspecionam o JSON publicado, não apenas a disponibilidade visual de
   `/docs` e `/redoc`.
 
@@ -274,3 +275,24 @@ concluídas.
   inclui empréstimos com seus livros.
 - Estratégias de loader não alteram DDL e não exigem nova revisão Alembic.
 - Testes contam statements reais e protegem custo, além de validar conteúdo.
+
+## Credenciais locais e hash de senha
+
+- Introduzido: Módulo 6 / aula 1.
+- Senhas são verificadas por hash unidirecional; não são armazenadas em texto
+  puro nem criptografadas para recuperação.
+- O checkpoint usa Argon2id com `m=19456`, `t=2` e `p=1`. A biblioteca gera salt
+  aleatório e o formato codificado registra algoritmo, parâmetros, salt e
+  digest.
+- Cadastro exige de 12 a 128 caracteres sem regras de composição. A senha não
+  é normalizada ou aparada; o e-mail identificador usa `strip().casefold()`.
+- `password_hash` é anulável para preservar usuários anteriores. `NULL` indica
+  ausência de credencial local e nunca é substituído por uma senha inventada.
+- `POST /auth/register` substitui o cadastro público `POST /users`; nenhuma
+  resposta inclui senha ou hash.
+- `POST /auth/login` responde `204` no sucesso e `401` genérico para conta
+  ausente, senha errada, usuário inativo, legado sem hash ou hash desconhecido.
+- Ausência de credencial ainda executa Argon2id contra `DUMMY_PASSWORD_HASH`,
+  removendo o atalho temporal mais evidente para enumeração de contas.
+- Hash e verify são CPU-bound e executam por `run_in_threadpool`, fora do event
+  loop. Limites de entrada ocorrem antes desse trabalho.

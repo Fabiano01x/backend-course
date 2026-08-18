@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 6 importado e sequência planejada
+Estado: Módulo 6 / aula 01 concluída
 
-Última aula concluída: M05/A07
+Última aula concluída: M06/A01
 
 ## Fonte
 
@@ -26,6 +26,7 @@ Estado: Módulo 6 importado e sequência planejada
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 - Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
   iniciada antes da conclusão do planejamento e da importação.
+- M06/A01 e seu checkpoint executável concluídos.
 
 ## Conceitos incorporados
 
@@ -62,14 +63,17 @@ Estado: Módulo 6 importado e sequência planejada
   retirada e devolução concorrentes.
 - Introduzidos em M05/A07: N+1, I/O implícito, `joinedload`, `selectinload`,
   loaders encadeados, `lazy="raise"` e testes de orçamento de consultas.
+- Introduzidos em M06/A01: hash versus criptografia, Argon2id, salt, parâmetros
+  de custo, `pwdlib`, hash fictício, enumeração temporal, normalização de
+  identificador e execução CPU-bound em worker thread.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A07.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A01.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A07.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A01.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -109,6 +113,10 @@ Estado: Módulo 6 importado e sequência planejada
 - O checkpoint M05/A07 enriquece o histórico com usuário e livro em uma
   consulta, carrega a coleção do detalhe de usuário em duas consultas fixas e
   usa `lazy="raise"` para recusar qualquer I/O relacional não planejado.
+- O checkpoint M06/A01 substitui o cadastro público sem credencial por
+  `/auth/register`, persiste somente Argon2id e usa `/auth/login` para verificar
+  senha com erro genérico. A revisão `0002` preserva usuários anteriores com
+  `password_hash` nulo.
 
 ## Pendências
 
@@ -122,6 +130,6 @@ Estado: Módulo 6 importado e sequência planejada
 
 ## Próxima etapa
 
-Produzir M06/A01 adicionando credenciais locais com hash resistente, migração
-segura para usuários existentes e verificação que não revele se um e-mail está
-cadastrado. O checkpoint deve partir integralmente de M05/A07.
+Produzir M06/A02 emitindo access tokens curtos com algoritmo e claims
+verificados. A identidade autenticada deverá substituir `user_id` fornecido
+pelo cliente nas operações em que o usuário age em nome próprio.

@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A07
+## Estado sequencial atual: checkpoint M06/A01
 
 ```text
 Cliente HTTP
@@ -34,7 +34,19 @@ FastAPI (app/main.py)
     |                     Book + disponibilidade por NOT EXISTS
     |
     +--> books.router  --> GET/POST/PUT/DELETE /books...
-    +--> users.router  --> GET/POST /users...
+    +--> auth.router   --> POST /auth/register
+    |                         |
+    |                         v
+    |                    worker thread
+    |                         |
+    |                         v
+    |                  Argon2id -> password_hash
+    |                  --> POST /auth/login
+    |                         |
+    |                         v
+    |                   SELECT user + verify
+    |                     204 ou 401 genérico
+    +--> users.router  --> GET /users...
     |                  --> GET /users/{id}
     |                               |
     |                               v
@@ -99,11 +111,11 @@ deploy / desenvolvimento
 alembic upgrade head
           |
           v
-0001_library_schema -> PostgreSQL
+0001_library_schema -> 0002_user_password_hash -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-07/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-01/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -130,9 +142,12 @@ sessões. A fábrica da aplicação aceita esse recurso por argumento, o guarda 
 `app.state` e liga seu startup e shutdown ao lifespan.
 
 `get_session()` cria uma `AsyncSession` por requisição e fecha o contexto após
-o consumidor. Livros e usuários usam esse recurso para leituras e escritas.
+o consumidor. Livros, usuários e autenticação usam esse recurso para leituras
+e escritas.
 `GET /books` emite uma contagem e uma consulta de página; disponibilidade é
 projetada por `NOT EXISTS`. ISBN e e-mail duplicados viram `409` após rollback.
+O conflito de ISBN é específico; o cadastro local usa mensagem genérica para
+não confirmar a existência de um e-mail.
 `PUT` substitui os campos editáveis do livro; `DELETE` retorna `204` ou preserva
 histórico por `ON DELETE RESTRICT`.
 
@@ -149,11 +164,24 @@ detalhe de usuário declara `selectinload(User.loans)` encadeado a
 `joinedload(Loan.book)` e usa dois statements fixos. Testes contam as consultas
 executadas e falham se esse orçamento ou a proibição de lazy loading regredir.
 
+`auth.router` concentra cadastro e verificação local. `POST /auth/register`
+normaliza o e-mail e desloca Argon2id para uma worker thread antes de persistir
+somente `password_hash`. `POST /auth/login` consulta o usuário e verifica a
+senha fora do event loop. Conta ausente, senha errada, usuário inativo, conta
+legada e hash inválido produzem o mesmo `401`; os caminhos sem hash real usam
+`DUMMY_PASSWORD_HASH`. Ainda não existe token ou identidade propagada entre
+requisições.
+
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
 invariantes; `alembic_version` registra a revisão aplicada. Migrações pertencem
 à etapa de deploy. O lifespan da API não executa DDL e somente descarta a
 engine no encerramento.
+
+A revisão `0002_user_password_hash` adiciona uma coluna anulável. O `NULL`
+preserva contas criadas antes de M06/A01 sem inventar uma credencial; somente
+`/auth/register` cria novas identidades locais. O downgrade remove a coluna e
+mantém a baseline separada.
 
 ## Separação pedagógica
 
@@ -190,8 +218,10 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   humana e teste de upgrade e downgrade.
 - O histórico incluído em `GET /users/{id}` ainda não possui paginação; um
   endpoint de coleção separado será necessário quando o volume justificar.
-- Usuários possuem Create e Read; Update e Delete ainda não foram exigidos pelo
-  projeto. Livros possuem o ciclo CRUD completo.
+- Usuários possuem Read; criação pública migrou para `/auth/register`. Update e
+  Delete ainda não foram exigidos. Livros possuem o ciclo CRUD completo.
+- O login desta etapa apenas comprova a credencial com `204`; não existe access
+  token, rate limit, recuperação de senha ou identidade atual nas rotas.
 
 ## Evolução concluída no Módulo 4
 
@@ -204,5 +234,5 @@ rotas modulares
     → contrato OpenAPI auditado
 ```
 
-O Módulo 5 encerra com carregamento previsível de relacionamentos.
-Autenticação permanece fora do escopo dos checkpoints atuais.
+O Módulo 5 encerra com carregamento previsível de relacionamentos. O Módulo 6
+começa pela credencial local; access tokens permanecem para a próxima aula.

@@ -329,3 +329,29 @@ para `/auth/register`; permitir que o cliente escolha `user_id` ao retirar um
 livro deixará de fazer sentido assim que a identidade autenticada existir. Toda
 quebra de contrato será apresentada e testada na aula que resolver o problema,
 sem antecipar RBAC ou outras camadas.
+
+## ADR-029 — Conta legada não recebe uma senha fictícia
+
+**Decisão:** M06/A01 adiciona `users.password_hash VARCHAR(255) NULL` pela
+revisão `0002_user_password_hash`. Usuários anteriores continuam íntegros, mas
+não autenticam localmente enquanto não houver um fluxo legítimo de definição ou
+recuperação. Backfill com segredo comum, valor reversível ou hash conhecido foi
+rejeitado.
+
+Novas credenciais usam Argon2id com os parâmetros mínimos registrados
+`m=19456`, `t=2`, `p=1` por meio de `pwdlib[argon2]`. A senha original existe
+somente no contrato de entrada e é processada em worker thread; o modelo,
+resposta e logs não precisam dela. O e-mail é normalizado como identificador,
+mas a senha é preservada byte a byte conforme recebida dentro dos limites de 12
+a 128 caracteres.
+
+`POST /users` deixa de criar contas sem credencial e é substituído por
+`POST /auth/register`. Duplicidade produz conflito genérico. O login desta etapa
+responde `204` somente para comprovar a verificação; M06/A02 manterá a rota e
+substituirá esse sucesso temporário por access token.
+
+Falhas de autenticação usam uma única resposta para usuário ausente, senha
+incorreta, conta inativa, conta legada ou hash inválido. Quando não existe hash
+real, verificamos um hash Argon2id fictício para evitar um caminho claramente
+mais barato. Isso não substitui rate limit, monitoramento ou defesa contra
+credential stuffing, que exigirão uma necessidade operacional própria.
