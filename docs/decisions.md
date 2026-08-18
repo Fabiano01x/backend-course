@@ -258,3 +258,22 @@ Autogenerate será usado apenas como ponto de partida. Cada revisão deve ser
 auditada quanto a preservação de dados, ordem, constraints, compatibilidade e
 reversão. A baseline foi provada em PostgreSQL real com o ciclo upgrade,
 downgrade, novo upgrade e CRUD HTTP.
+
+## ADR-026 — AsyncSession é a unidade de trabalho do empréstimo
+
+**Decisão:** M05/A06 usa `async with session.begin()` como fronteira do
+service de retirada e devolução. Não criamos uma classe Unit of Work que apenas
+delegaria para `AsyncSession`. `LoanRepository` concentra as consultas que o
+caso composto coordena, mas não expõe commit ou rollback. CRUDs simples
+continuam diretos nos routers.
+
+A retirada bloqueia a linha de `books` com `SELECT FOR UPDATE`, consulta o
+empréstimo ativo e faz INSERT com `flush`. Isso serializa decisões sobre o
+mesmo livro; o índice parcial permanece como garantia independente contra
+outros escritores. Uma disputa que alcança a constraint é revertida e vira
+`409`.
+
+Disponibilidade continua derivada. Criar um `Loan` ativo a torna falsa;
+preencher `returned_at` a torna verdadeira. Não adicionamos um segundo write em
+`books`, evitando duas fontes de verdade. A concorrência foi validada em
+PostgreSQL real com duas requisições simultâneas: uma confirma e uma conflita.

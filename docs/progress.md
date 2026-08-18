@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 5 / aula 05 concluída
+Estado: Módulo 5 / aula 06 concluída
 
-Última aula concluída: M05/A05
+Última aula concluída: M05/A06
 
 ## Fonte
 
@@ -20,7 +20,7 @@ Estado: Módulo 5 / aula 05 concluída
 - Manifesto de apresentação registra as oito aulas e sua proveniência.
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
-- Sequência autoral do Módulo 5 definida; aulas 1–5 e checkpoints concluídos.
+- Sequência autoral do Módulo 5 definida; aulas 1–6 e checkpoints concluídos.
 
 ## Conceitos incorporados
 
@@ -52,14 +52,17 @@ Estado: Módulo 5 / aula 05 concluída
   `PUT`, `DELETE`, `204` e `409`.
 - Introduzidos em M05/A05: Alembic, grafo de revisões, `upgrade`, `downgrade`,
   `target_metadata`, autogenerate revisado, baseline e migração assíncrona.
+- Introduzidos em M05/A06: ACID, `session.begin`, `flush`, fronteira
+  transacional no service, repository sem commit, `SELECT FOR UPDATE`,
+  retirada e devolução concorrentes.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A05.
-- Livros, usuários e rotas operacionais possuem routers separados.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M05/A06.
+- Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A05.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M05/A06.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -93,6 +96,9 @@ Estado: Módulo 5 / aula 05 concluída
   configuração validada no ambiente assíncrono do Alembic e remove todo DDL
   do startup. Upgrade, downgrade, inspeção do esquema e CRUD foram validados
   em PostgreSQL 18.4 efêmero.
+- O checkpoint M05/A06 adiciona retirada, listagem e devolução. Um service
+  controla `session.begin`; um repository focado não confirma transações; lock
+  de livro e índice parcial garantem uma retirada ativa sob concorrência.
 
 ## Pendências
 
@@ -104,5 +110,5 @@ Estado: Módulo 5 / aula 05 concluída
 
 ## Próxima etapa
 
-Produzir M05/A06 implementando o caso de uso de empréstimo em uma fronteira
-transacional atômica, sem antecipar uma Unit of Work genérica.
+Produzir M05/A07 enriquecendo as leituras de empréstimos com relacionamentos
+carregados explicitamente e testes que detectem N+1 e I/O implícito.

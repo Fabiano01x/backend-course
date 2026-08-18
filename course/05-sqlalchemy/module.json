@@ -62,7 +62,7 @@
       "summary": "Crie empréstimos sem deixar livro e histórico em estados divergentes.",
       "sources": ["source/module-05/04.md", "source/module-05/06.md"],
       "checkpoint": "reference/checkpoints/module-05/lesson-06",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 7,

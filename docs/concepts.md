@@ -206,8 +206,8 @@ concluídas.
 ## CRUD persistente com SQLAlchemy
 
 - Introduzido: Módulo 5 / aula 4.
-- Routers usam `AsyncSession` diretamente; repository e service continuam
-  adiados até existir coordenação de regras que justifique a fronteira.
+- CRUDs simples de livros e usuários usam `AsyncSession` diretamente. Desde
+  M05/A06, somente o caso composto de empréstimo usa repository e service.
 - `POST` usa `add`, `commit` e `refresh`; violações de unicidade provocam
   rollback e resposta `409 Conflict`.
 - `select()` constrói consultas; `execute`, `scalar`, `scalars` e `session.get`
@@ -237,3 +237,22 @@ concluídas.
   `connection.run_sync`, com `NullPool` e descarte da engine ao final.
 - Migrações são etapa de deploy: `alembic upgrade head` acontece antes do
   processo da API e nunca dentro de seu startup.
+
+## Transações e empréstimos atômicos
+
+- Introduzido: Módulo 5 / aula 6.
+- `async with session.begin()` confirma na saída normal e reverte quando uma
+  exceção atravessa a fronteira.
+- `flush()` envia mudanças e verifica constraints sem encerrar a transação;
+  `commit()` torna o conjunto permanente.
+- A `AsyncSession` já rastreia mudanças e controla a transação, portanto não
+  foi envolvida por uma classe Unit of Work que apenas repetiria sua API.
+- `LoanRepository` executa consultas, `add` e `flush`, mas nunca commit ou
+  rollback. O service de empréstimos possui a fronteira transacional e as regras.
+- `SELECT FOR UPDATE` serializa retiradas que decidem sobre o mesmo livro. O
+  índice parcial continua sendo a garantia final contra dois ativos.
+- `POST /loans` exige usuário ativo, livro existente, disponibilidade e prazo
+  futuro com fuso; ausências retornam `404` e conflitos de estado, `409`.
+- `POST /loans/{loan_id}/return` preenche `returned_at`; disponibilidade muda
+  por derivação do histórico, sem atualizar um flag redundante em `books`.
+- I/O externo não pertence a uma transação de banco curta.

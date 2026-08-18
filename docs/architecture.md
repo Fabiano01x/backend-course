@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M05/A05
+## Estado sequencial atual: checkpoint M05/A06
 
 ```text
 Cliente HTTP
@@ -35,6 +35,19 @@ FastAPI (app/main.py)
     |
     +--> books.router  --> GET/POST/PUT/DELETE /books...
     +--> users.router  --> GET/POST /users...
+    +--> loans.router  --> GET/POST /loans
+    |                  --> POST /loans/{id}/return
+    |                               |
+    |                               v
+    |                         Loan service
+    |                    session.begin() boundary
+    |                               |
+    |                               v
+    |                        LoanRepository
+    |                    SELECT ... FOR UPDATE
+    |                        add + flush
+    |                               |
+    +-------------------------------+
                                   |
                                   v
                    schemas Pydantic + DatabaseSession
@@ -84,12 +97,12 @@ alembic upgrade head
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-05/lesson-05/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-05/lesson-06/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
-`schemas.py` declara os contratos. `data.py` foi removido: os routers consomem a
-sessão diretamente e mantêm statements ORM visíveis, sem repository ou service.
-O piloto anterior continua preservado separadamente.
+`schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
+consomem a sessão diretamente; o caso composto de empréstimo usa service e
+repository focados. O piloto anterior continua preservado separadamente.
 
 `config.py` declara o contrato sem criar instância. `dependencies.py` separa o
 carregador cacheado do provider injetável. Startup chama o carregador; endpoints
@@ -116,6 +129,12 @@ o consumidor. Livros e usuários usam esse recurso para leituras e escritas.
 projetada por `NOT EXISTS`. ISBN e e-mail duplicados viram `409` após rollback.
 `PUT` substitui os campos editáveis do livro; `DELETE` retorna `204` ou preserva
 histórico por `ON DELETE RESTRICT`.
+
+Retirada e devolução usam uma fronteira `session.begin()` no service.
+`LoanRepository` executa consultas e flush, mas não controla commit. A retirada
+bloqueia o livro com `FOR UPDATE`; o índice parcial permanece como garantia
+final contra dois empréstimos ativos. Disponibilidade muda pela criação ou
+encerramento do fato `Loan`, sem flag redundante em `Book`.
 
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
@@ -152,11 +171,12 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 
 - Paginação por offset no PostgreSQL ainda pode deslocar itens sob escritas
   concorrentes; cursor permanece adiado até essa garantia ser necessária.
-- Ainda não existem service layer nem repository. A sessão é exposta
-  diretamente aos routers que realmente precisam dela.
+- Service e repository existem somente no caso composto de empréstimo; não
+  foram generalizados para CRUDs simples nem envolvidos por interfaces vazias.
 - Autogenerate fornece somente uma candidata; toda nova revisão exige revisão
   humana e teste de upgrade e downgrade.
-- `Loan` possui modelo Python, mas ainda não possui rota nem caso de uso.
+- A listagem de empréstimos retorna apenas fatos e identificadores; relações
+  ainda não são carregadas para evitar I/O implícito.
 - Usuários possuem Create e Read; Update e Delete ainda não foram exigidos pelo
   projeto. Livros possuem o ciclo CRUD completo.
 
@@ -171,5 +191,5 @@ rotas modulares
     → contrato OpenAPI auditado
 ```
 
-Transações de empréstimo continuam na próxima aula; autenticação permanece
-fora do escopo deste módulo.
+Carregamento previsível de relacionamentos continua na próxima aula;
+autenticação permanece fora do escopo deste módulo.
