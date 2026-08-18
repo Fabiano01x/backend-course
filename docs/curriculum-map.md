@@ -63,3 +63,27 @@ conteúdo produzido de planejamento aprovado.
 5. Evoluindo o esquema com Alembic.
 6. Empréstimos atômicos e fronteiras de transação.
 7. Consultas previsíveis sem N+1.
+
+## Módulo 6 — Backend Authentication and Security
+
+- Fonte importada integralmente: 6 aulas da versão 3.
+- A sequência autoral começa pela credencial que o modelo atual ainda não
+  possui e integra cada mecanismo à Library API.
+
+| Ordem original | Aula original | Fonte | Conceitos identificados | Nova posição | Nova aula | Status | Justificativa |
+|---:|---|---|---|---:|---|---|---|
+| 1 | JWT Authentication with Access and Refresh Tokens | `source/module-06/01.md` | JWT, claims, access token, refresh token, login, armazenamento no cliente | 1 e 2 | Identidade local sem armazenar senhas; Access tokens curtos e identidade autenticada | Analisado, dividido e corrigido | A fonte pressupõe um `authenticate_user` inexistente. Primeiro adicionaremos hash e verificação de senha; depois emitiremos JWT com algoritmo fixo, claims validadas e identidade derivada do token. Refresh não será estático nem entregue antes de seu ciclo seguro. |
+| 2 | Secure Refresh Token Management | `source/module-06/02.md` | rotação, `jti`, persistência, revogação, reutilização, logout | 3 | Sessões renováveis sob um navegador hostil | Analisado, integrado e corrigido | Rotação e proteção do transporte pertencem ao mesmo problema. O servidor armazenará digest, família e estado transacional em vez de token bruto ou uma tabela chamada blocklist que também funciona como allowlist. |
+| 3 | Implementing RBAC Systems | `source/module-06/03.md` | AuthN versus AuthZ, roles, associação muitos-para-muitos, claims, dependências, `403` | 4 | Autorização explícita com papéis | Analisado e corrigido | Papéis serão consultados como estado atual para que remoções tenham efeito imediato; claims de longa validade não serão tratadas como fonte autoritativa. Propriedade e papel continuarão regras distintas. |
+| 4 | Implementing OAuth2 for Social Login | `source/module-06/04.md` | Authorization Code, redirect URI, state, client secret, callback, login social | 5 | Login social é OpenID Connect | Analisado e corrigido | OAuth 2.0 delega autorização; identidade requer OIDC. Além de `state`, validaremos issuer, audience, nonce e assinatura, e vincularemos a conta por `(provider, subject)` em vez de confiar apenas no e-mail. |
+| 5 | API Key Authentication for Service-to-Service Communication | `source/module-06/05.md` | credencial de máquina, header, comparação segura, hash, prefixo, chamada entre serviços | 6 | Chaves de API com ciclo de vida | Analisado e complementado | Uma constante global não identifica clientes nem permite rotação. A chave terá prefixo público, segredo exibido uma vez, digest, escopos, expiração opcional e revogação; TLS continua obrigatório. |
+| 6 | Preventing XSS and CSRF Attacks | `source/module-06/06.md` | XSS, encoding, cookies, CSRF, SameSite, token, Fetch Metadata, defesa em profundidade | 3 | Sessões renováveis sob um navegador hostil | Analisado, antecipado e integrado | O risco nasce quando o refresh token entra em cookie. A aula combinará `HttpOnly`, `Secure`, `SameSite`, origem/CSRF e limites do backend contra XSS, sem copiar exemplos Flask/Jinja como se fossem a arquitetura atual. |
+
+### Sequência planejada
+
+1. Identidade local sem armazenar senhas.
+2. Access tokens curtos e identidade autenticada.
+3. Sessões renováveis sob um navegador hostil.
+4. Autorização explícita com papéis.
+5. Login social é OpenID Connect.
+6. Chaves de API com ciclo de vida.

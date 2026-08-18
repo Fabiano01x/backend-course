@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "course_id": "3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "course_title": "Python full stack for MNCs",
+  "version_number": 3,
+  "module_number": 6,
+  "module_title": "Backend Authentication and Security",
+  "course_api_url": "https://paths.grasp.study/api/goals/3b30bbfd-e48e-4883-8450-8fca5452c8d1",
+  "imported_at": "2026-08-18T21:47:30.657046+00:00",
+  "markdown_derivation": "verbatim lesson.content with one trailing newline",
+  "lessons": [
+    {
+      "position": 1,
+      "lesson_id": "1c91e169-331b-4696-9236-1d4c9c2c57c5",
+      "title": "JWT Authentication with Access and Refresh Tokens",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/1c91e169-331b-4696-9236-1d4c9c2c57c5",
+      "json_file": "01.json",
+      "json_sha256": "aad85144b232899a74549aad004c49f0d95469d5fdf6e4ecf2b42812a8113851",
+      "markdown_file": "01.md",
+      "markdown_sha256": "25ededef59db0266084d7c1306d449973af8ef1992b009ac76294e06b028a56b"
+    },
+    {
+      "position": 2,
+      "lesson_id": "800ef07f-7c22-43b0-8992-0fbc5dc301bf",
+      "title": "Secure Refresh Token Management",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/800ef07f-7c22-43b0-8992-0fbc5dc301bf",
+      "json_file": "02.json",
+      "json_sha256": "0710a2a899743f62dec7113dc11104ede39ef6c1ddbdb54894bfb1145db8a7e6",
+      "markdown_file": "02.md",
+      "markdown_sha256": "de6e4eab5f56c76fd8d8cb7b3b4f2a48134cc7071de2f06e355443e31838cf62"
+    },
+    {
+      "position": 3,
+      "lesson_id": "128f6059-a107-4477-bfff-e2fd90af10a5",
+      "title": "Implementing RBAC Systems",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/128f6059-a107-4477-bfff-e2fd90af10a5",
+      "json_file": "03.json",
+      "json_sha256": "c2150c2ef22366ad9e69402b3fa57426dc6618fc852e3630ffff4c7ab596388e",
+      "markdown_file": "03.md",
+      "markdown_sha256": "1859e44d99a29f393217e31cf5fc2497eeb6f08211d9a2e1db86b02599bb37f0"
+    },
+    {
+      "position": 4,
+      "lesson_id": "424b91a1-efac-4ec6-b167-c1a07dbc5ebf",
+      "title": "Implementing OAuth2 for Social Login",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/424b91a1-efac-4ec6-b167-c1a07dbc5ebf",
+      "json_file": "04.json",
+      "json_sha256": "1bb53635e5f87862b5b4ac59db12a6c49d4496f8bd453636f44d6f1dd44e668a",
+      "markdown_file": "04.md",
+      "markdown_sha256": "e03a7cdeeb6142a5e71cf16e8daa583737d512df8674eaad6316eb2f5ac203f6"
+    },
+    {
+      "position": 5,
+      "lesson_id": "8d2ecaa7-079b-49c1-93a1-4671e01c9328",
+      "title": "API Key Authentication for Service-to-Service Communication",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/8d2ecaa7-079b-49c1-93a1-4671e01c9328",
+      "json_file": "05.json",
+      "json_sha256": "eff710069b324bfc7b4615912cd0611ec17e527c76dfb4298db0459d8fad8d63",
+      "markdown_file": "05.md",
+      "markdown_sha256": "7d74cf795eb1e8939e233c04361fa68ec64f45d2b99e6c05753caa2ef1496808"
+    },
+    {
+      "position": 6,
+      "lesson_id": "18c9e607-2866-44e1-94bd-e9c910817c65",
+      "title": "Preventing XSS and CSRF Attacks",
+      "api_url": "https://paths.grasp.study/api/pathways/lessons/18c9e607-2866-44e1-94bd-e9c910817c65",
+      "json_file": "06.json",
+      "json_sha256": "2fc2206a096ed707c277330843ceb9ad40d9a4e200eb5bec366141285215c3c2",
+      "markdown_file": "06.md",
+      "markdown_sha256": "ae5c3fc558040ffe5b3d148f4cded4e0d73dd2543a3bc3a39004b4e34089baf8"
+    }
+  ]
+}

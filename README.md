@@ -6,7 +6,8 @@ inglês e imutável; o novo curso é escrito em português do Brasil.
 
 O Módulo 4 constrói a fronteira HTTP da Library API ao longo de oito aulas. O
 Módulo 5 substitui o estado em memória por persistência relacional e encerra
-com transações e leituras previsíveis. Autenticação e PDF continuam adiados.
+com transações e leituras previsíveis. O Módulo 6, já importado e planejado,
+adicionará autenticação e segurança. PDF continua adiado.
 
 ## Estrutura
 

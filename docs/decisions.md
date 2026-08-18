@@ -297,3 +297,35 @@ foram informados pelo comando. Testes com eventos do SQLAlchemy impõem os
 orçamentos de consulta e comprovam que um acesso não planejado falha sem emitir
 um statement adicional. Como loaders não mudam o esquema, nenhuma migração foi
 criada.
+
+## ADR-028 — Segurança começa pela credencial e pelo modelo de ameaça
+
+**Contexto:** o Módulo 6 original possui seis aulas sobre JWT, refresh tokens,
+RBAC, login social, chaves de API e XSS/CSRF. A primeira implementação presume
+que usuários já possuem senha verificável, mas o checkpoint M05/A07 armazena
+somente nome, e-mail e estado. A fonte também separa decisões de cookie das
+ameaças do navegador e usa OAuth 2.0 como sinônimo de autenticação social.
+
+**Decisão:** a sequência autoral terá seis aulas. A primeira introduzirá
+credenciais locais e hash resistente; a segunda, access tokens curtos. Refresh
+rotation e XSS/CSRF formarão uma única aula porque o transporte em cookie define
+o modelo de ameaça. Depois entram RBAC, OIDC e chaves de API.
+
+O access token terá algoritmo permitido fixo e claims verificadas; o cliente
+não escolherá o usuário de um empréstimo autenticado. Refresh tokens terão
+digest no banco, rotação atômica, família, revogação e detecção de reutilização;
+o valor bruto não será persistido. Cookies serão `HttpOnly`, `Secure` em HTTPS e
+terão política `SameSite` acompanhada de defesa CSRF compatível com o fluxo.
+
+Papéis persistidos serão a fonte atual de autorização, evitando tratar uma
+claim potencialmente obsoleta como verdade permanente. Login social será
+ensinado como OpenID Connect sobre Authorization Code, com `state`, `nonce`,
+issuer, audience e assinatura validados; identidades externas serão ligadas por
+provedor e `subject`, não somente por e-mail. Chaves de API terão identidade,
+digest, escopos e revogação, em vez de uma constante compartilhada.
+
+A fronteira pública de usuários também será revista. O cadastro local migrará
+para `/auth/register`; permitir que o cliente escolha `user_id` ao retirar um
+livro deixará de fazer sentido assim que a identidade autenticada existir. Toda
+quebra de contrato será apresentada e testada na aula que resolver o problema,
+sem antecipar RBAC ou outras camadas.

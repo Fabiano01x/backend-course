@@ -1,6 +1,6 @@
 # Progresso
 
-Estado: Módulo 5 concluído
+Estado: Módulo 6 importado e sequência planejada
 
 Última aula concluída: M05/A07
 
@@ -11,6 +11,9 @@ Estado: Módulo 5 concluído
 - As oito aulas foram analisadas e rastreadas no mapa curricular.
 - Módulo 5 importado integralmente: 7 JSON, 7 Markdown e manifesto com hashes.
 - As sete novas aulas foram analisadas e rastreadas no mapa curricular.
+- Módulo 6 importado integralmente: 6 JSON, 6 Markdown e manifesto com hashes.
+- As seis aulas de autenticação e segurança foram auditadas e rastreadas no
+  mapa curricular.
 
 ## Conteúdo autoral
 
@@ -21,6 +24,8 @@ Estado: Módulo 5 concluído
 - Aulas 1–8 e seus checkpoints executáveis concluídos.
 - Módulo 4 concluído e verificável a partir do Git.
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
+- Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
+  iniciada antes da conclusão do planejamento e da importação.
 
 ## Conceitos incorporados
 
@@ -109,12 +114,14 @@ Estado: Módulo 5 concluído
 
 - Encerrar cada aula ou mudança relevante com testes, validação e commit.
 - Nunca alterar ou incluir a área `student/` em commits do Codex.
-- Manter PDF e autenticação fora dos módulos já concluídos.
+- Manter PDF fora dos módulos já concluídos.
+- Preservar explicitamente as correções de segurança registradas para JWT,
+  refresh, RBAC, OIDC, chaves de API, XSS e CSRF.
 - Manter validador, retomada e gerador independentes do nome temático dos
   diretórios de módulo.
 
 ## Próxima etapa
 
-Nenhuma aula autoral está planejada depois de M05/A07. Antes de iniciar
-autenticação, importar e mapear o módulo-fonte correspondente, preservando os
-checkpoints concluídos da Library API.
+Produzir M06/A01 adicionando credenciais locais com hash resistente, migração
+segura para usuários existentes e verificação que não revele se um e-mail está
+cadastrado. O checkpoint deve partir integralmente de M05/A07.

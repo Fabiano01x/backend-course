@@ -1,0 +1,68 @@
+{
+  "module": 6,
+  "slug": "auth-security",
+  "title": "Autenticação e segurança da Library API",
+  "description": "Transforme usuários persistidos em identidades verificáveis e aplique autorização, sessões renováveis e credenciais de máquina sem esconder as fronteiras de segurança.",
+  "lessons": [
+    {
+      "number": 1,
+      "slug": "local-credentials",
+      "file": "01-local-credentials.md",
+      "title": "Identidade local sem armazenar senhas",
+      "summary": "Cadastre credenciais com hash resistente e verifique senhas sem vazar a existência de contas.",
+      "sources": ["source/module-06/01.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-01",
+      "status": "planned"
+    },
+    {
+      "number": 2,
+      "slug": "access-tokens",
+      "file": "02-access-tokens.md",
+      "title": "Access tokens curtos e identidade autenticada",
+      "summary": "Emita e valide JWTs com claims estritas e derive o usuário da credencial, não do payload do cliente.",
+      "sources": ["source/module-06/01.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-02",
+      "status": "planned"
+    },
+    {
+      "number": 3,
+      "slug": "refresh-sessions",
+      "file": "03-refresh-sessions.md",
+      "title": "Sessões renováveis sob um navegador hostil",
+      "summary": "Rotacione refresh tokens, detecte reutilização e combine cookies seguros com defesa CSRF e XSS.",
+      "sources": ["source/module-06/02.md", "source/module-06/06.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-03",
+      "status": "planned"
+    },
+    {
+      "number": 4,
+      "slug": "rbac",
+      "file": "04-rbac.md",
+      "title": "Autorização explícita com papéis",
+      "summary": "Modele papéis e diferencie identidade inválida, permissão insuficiente e regras de propriedade.",
+      "sources": ["source/module-06/03.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-04",
+      "status": "planned"
+    },
+    {
+      "number": 5,
+      "slug": "openid-connect",
+      "file": "05-openid-connect.md",
+      "title": "Login social é OpenID Connect",
+      "summary": "Integre uma identidade externa com Authorization Code, state, nonce e vínculo estável por emissor e subject.",
+      "sources": ["source/module-06/04.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-05",
+      "status": "planned"
+    },
+    {
+      "number": 6,
+      "slug": "api-keys",
+      "file": "06-api-keys.md",
+      "title": "Chaves de API com ciclo de vida",
+      "summary": "Autentique clientes de máquina com segredo exibido uma vez, hash, escopos e revogação.",
+      "sources": ["source/module-06/05.md"],
+      "checkpoint": "reference/checkpoints/module-06/lesson-06",
+      "status": "planned"
+    }
+  ]
+}
