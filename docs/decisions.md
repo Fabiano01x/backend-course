@@ -355,3 +355,31 @@ incorreta, conta inativa, conta legada ou hash inválido. Quando não existe has
 real, verificamos um hash Argon2id fictício para evitar um caminho claramente
 mais barato. Isso não substitui rate limit, monitoramento ou defesa contra
 credential stuffing, que exigirão uma necessidade operacional própria.
+
+## ADR-030 — O comando autenticado não escolhe seu sujeito
+
+**Decisão:** M06/A02 usa PyJWT e HS256 para access tokens de 15 minutos. A
+chave simétrica é configuração privada com tamanho mínimo; o valor didático
+tem uso somente local e é recusado em produção. O algoritmo permitido permanece
+fixo no código em vez de ser escolhido pelo header ou por variável de ambiente.
+
+O perfil usa header `typ=at+jwt` e exige `iss`, `aud`, `sub`, `iat`, `nbf`,
+`exp`, `jti` e `token_type=access`. Emissão e validação usam issuer e audience
+configurados, audience estrita e regras mutuamente exclusivas que prepararão a
+separação do refresh token. Assinatura válida sem contexto compatível é recusada.
+
+`POST /auth/login` passa de `204` temporário a `200` com `access_token`,
+`token_type=bearer` e `expires_in`; nenhum refresh token é emitido antes de
+existirem rotação e persistência seguras. Falhas continuam genéricas e recebem
+`WWW-Authenticate: Bearer`.
+
+`POST /loans` remove `user_id` do request body e deriva a FK de `sub`. A
+dependência valida o token sem iniciar I/O de banco e entrega somente uma
+identidade pequena. O service consulta existência e estado do usuário dentro da
+transação já existente; sujeito ausente ou inativo vira `401`. Essa ordem evita
+que uma consulta da dependência abra implicitamente uma transação na mesma
+`AsyncSession` antes de `session.begin()`.
+
+Não foi criada revisão Alembic: tokens são autocontidos e esta etapa não
+persiste sessão. Revogação, renovação, cookie e ameaças do navegador ficam para
+M06/A03; papéis e `403` permanecem para a aula de RBAC.

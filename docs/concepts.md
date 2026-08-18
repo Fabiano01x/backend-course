@@ -101,8 +101,7 @@ concluídas.
 - `GET /info` expõe somente nome, versão, ambiente e debug por meio de
   `AppInfo`.
 - Variáveis de ambiente não são tratadas como cofre de segredos.
-- Configurações privadas de banco nunca entram nessa resposta; JWT continua
-  adiado porque ainda não possui consumidor.
+- Configurações privadas de banco e JWT nunca entram nessa resposta.
 
 ## Dependency Injection
 
@@ -296,3 +295,27 @@ concluídas.
   removendo o atalho temporal mais evidente para enumeração de contas.
 - Hash e verify são CPU-bound e executam por `run_in_threadpool`, fora do event
   loop. Limites de entrada ocorrem antes desse trabalho.
+
+## Access tokens e identidade autenticada
+
+- Introduzido: Módulo 6 / aula 2.
+- O access token é um JWT assinado, legível e não criptografado. A assinatura
+  protege integridade e autenticidade dentro de uma política de validação;
+  segredos nunca pertencem ao payload.
+- HS256 é fixo no emissor e na lista aceita pelo decoder. O header recebido
+  não escolhe o algoritmo da aplicação.
+- O perfil exige `typ=at+jwt` e as claims `iss`, `aud`, `sub`, `iat`, `nbf`,
+  `exp`, `jti` e `token_type=access`. Audience é estrita e `jti` é UUID.
+- A validade padrão é 15 minutos. O token não inclui senha, hash, e-mail,
+  papéis ou refresh token.
+- `jwt_secret_key` usa `SecretStr`, exige ao menos 32 caracteres e deve ser
+  substituída por valor aleatório. A chave didática é recusada em produção.
+- `HTTPBearer` extrai `Authorization: Bearer`; qualquer falha produz o mesmo
+  `401` com `WWW-Authenticate: Bearer`.
+- `AuthenticatedIdentity` carrega somente o sujeito validado. O usuário ORM é
+  consultado dentro da transação do empréstimo para confirmar existência e
+  estado atual sem abrir I/O antes de `session.begin()`.
+- `POST /loans` não aceita mais `user_id`; a FK gravada deriva exclusivamente
+  de `sub`. Enviar o campo antigo falha com `422` por contrato estrito.
+- `401` representa credencial ausente ou inválida. `403` fica reservado para
+  identidade válida sem permissão, problema da futura aula de autorização.

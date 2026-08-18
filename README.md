@@ -7,8 +7,8 @@ inglês e imutável; o novo curso é escrito em português do Brasil.
 O Módulo 4 constrói a fronteira HTTP da Library API ao longo de oito aulas. O
 Módulo 5 substitui o estado em memória por persistência relacional e encerra
 com transações e leituras previsíveis. O Módulo 6, já importado e planejado,
-está adicionando autenticação e segurança a partir de credenciais locais. PDF
-continua adiado.
+está adicionando autenticação e segurança; credenciais locais e access tokens
+curtos já integram a retirada autenticada. PDF continua adiado.
 
 ## Estrutura
 
@@ -37,15 +37,15 @@ python3 scripts/import_grasp.py
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './reference/checkpoints/module-06/lesson-01[dev]'
+.venv/bin/python -m pip install -e './reference/checkpoints/module-06/lesson-02[dev]'
 ```
 
 ## Executar a API
 
 ```bash
-docker compose -f reference/checkpoints/module-06/lesson-01/compose.yaml up -d --wait
+docker compose -f reference/checkpoints/module-06/lesson-02/compose.yaml up -d --wait
 .venv/bin/python -m uvicorn app.main:app --reload \
-  --app-dir reference/checkpoints/module-06/lesson-01
+  --app-dir reference/checkpoints/module-06/lesson-02
 ```
 
 Documentação interativa: `http://127.0.0.1:8000/docs`.
@@ -54,8 +54,8 @@ Documentação interativa: `http://127.0.0.1:8000/docs`.
 
 ```bash
 .venv/bin/python -m pytest -q tests
-PYTHONPATH=reference/checkpoints/module-06/lesson-01 \
-  .venv/bin/python -m pytest -q reference/checkpoints/module-06/lesson-01/tests
+PYTHONPATH=reference/checkpoints/module-06/lesson-02 \
+  .venv/bin/python -m pytest -q reference/checkpoints/module-06/lesson-02/tests
 .venv/bin/python scripts/validate_course.py
 ```
 

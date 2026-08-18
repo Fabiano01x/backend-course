@@ -22,7 +22,8 @@ module-05/
 ├── lesson-06/
 └── lesson-07/
 module-06/
-└── lesson-01/
+├── lesson-01/
+└── lesson-02/
 ```
 
 Um checkpoint novo deve partir do anterior, introduzir apenas o conceito da

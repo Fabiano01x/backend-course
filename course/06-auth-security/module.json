@@ -22,7 +22,7 @@
       "summary": "Emita e valide JWTs com claims estritas e derive o usuário da credencial, não do payload do cliente.",
       "sources": ["source/module-06/01.md"],
       "checkpoint": "reference/checkpoints/module-06/lesson-02",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 3,

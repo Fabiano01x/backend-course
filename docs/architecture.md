@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M06/A01
+## Estado sequencial atual: checkpoint M06/A02
 
 ```text
 Cliente HTTP
@@ -45,7 +45,10 @@ FastAPI (app/main.py)
     |                         |
     |                         v
     |                   SELECT user + verify
-    |                     204 ou 401 genérico
+    |                         |
+    |                         v
+    |                  access JWT (15 min)
+    |                  HS256 + claims estritas
     +--> users.router  --> GET /users...
     |                  --> GET /users/{id}
     |                               |
@@ -53,18 +56,27 @@ FastAPI (app/main.py)
     |                    selectinload(User.loans)
     |                    + joinedload(Loan.book)
     |                         2 statements
-    +--> loans.router  --> GET/POST /loans
+    +--> loans.router  --> GET /loans
+    |                  |      |
+    |                  |      v
+    |                  | joinedload(user + book): 1 statement
+    |                  |
+    |                  --> POST /loans + Bearer token
+    |                  |      |
+    |                  |      v
+    |                  | CurrentIdentity(sub do JWT)
+    |                  |      |
+    |                  |      v
     |                  --> POST /loans/{id}/return
-    |                         |             |
-    |                         v             v
-    |               GET: joinedload     writes: Loan service
-    |                user + book        session.begin() boundary
-    |                 1 statement              |
-    |                                          v
-    |                                   LoanRepository
-    |                               SELECT ... FOR UPDATE
-    |                                   add + flush
-    |                                          |
+    |                         |
+    |                         v
+    |                    Loan service
+    |               session.begin() boundary
+    |                         |
+    |                         v
+    |            usuário atual + regras + LoanRepository
+    |                SELECT ... FOR UPDATE + add/flush
+    |                         |
     +-------------------------------+
                                   |
                                   v
@@ -115,7 +127,7 @@ alembic upgrade head
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-06/lesson-01/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-02/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -164,13 +176,23 @@ detalhe de usuário declara `selectinload(User.loans)` encadeado a
 `joinedload(Loan.book)` e usa dois statements fixos. Testes contam as consultas
 executadas e falham se esse orçamento ou a proibição de lazy loading regredir.
 
-`auth.router` concentra cadastro e verificação local. `POST /auth/register`
-normaliza o e-mail e desloca Argon2id para uma worker thread antes de persistir
-somente `password_hash`. `POST /auth/login` consulta o usuário e verifica a
-senha fora do event loop. Conta ausente, senha errada, usuário inativo, conta
-legada e hash inválido produzem o mesmo `401`; os caminhos sem hash real usam
-`DUMMY_PASSWORD_HASH`. Ainda não existe token ou identidade propagada entre
-requisições.
+`auth.router` concentra cadastro e login local. `POST /auth/register` normaliza
+o e-mail e desloca Argon2id para uma worker thread antes de persistir somente
+`password_hash`. `POST /auth/login` consulta o usuário, verifica a senha fora do
+event loop e emite um access JWT de 15 minutos. Conta ausente, senha errada,
+usuário inativo, conta legada e hash inválido produzem o mesmo `401`; os caminhos
+sem hash real usam `DUMMY_PASSWORD_HASH`.
+
+`security/tokens.py` fixa HS256 e o perfil `at+jwt`. Emissão e validação exigem
+issuer, audience estrita, sujeito, datas, UUID em `jti` e
+`token_type=access`. A chave usa `SecretStr`; a chave didática não é aceita em
+produção. Tokens não são criptografados e não carregam dados confidenciais.
+
+`get_current_identity` converte `Authorization: Bearer` em um sujeito validado
+sem consultar o banco. `POST /loans` remove `user_id` do corpo e passa esse
+sujeito ao service. A transação então consulta a conta atual, recusa ausência ou
+inatividade com `401` e usa o ID autenticado na FK. Essa ordem preserva a única
+fronteira `session.begin()` do caso de uso.
 
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
@@ -182,6 +204,9 @@ A revisão `0002_user_password_hash` adiciona uma coluna anulável. O `NULL`
 preserva contas criadas antes de M06/A01 sem inventar uma credencial; somente
 `/auth/register` cria novas identidades locais. O downgrade remove a coluna e
 mantém a baseline separada.
+
+M06/A02 não altera o esquema. Access tokens são autocontidos; persistência e
+rotação de sessão aparecem somente com refresh tokens em M06/A03.
 
 ## Separação pedagógica
 
@@ -220,8 +245,10 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   endpoint de coleção separado será necessário quando o volume justificar.
 - Usuários possuem Read; criação pública migrou para `/auth/register`. Update e
   Delete ainda não foram exigidos. Livros possuem o ciclo CRUD completo.
-- O login desta etapa apenas comprova a credencial com `204`; não existe access
-  token, rate limit, recuperação de senha ou identidade atual nas rotas.
+- O access token expira em 15 minutos e não possui revogação individual. Ainda
+  não existem refresh token, logout, rate limit ou recuperação de senha.
+- Apenas a retirada usa a identidade atual. Listagem, devolução e administração
+  ganharão regras de permissão quando RBAC tornar essa necessidade explícita.
 
 ## Evolução concluída no Módulo 4
 
@@ -235,4 +262,5 @@ rotas modulares
 ```
 
 O Módulo 5 encerra com carregamento previsível de relacionamentos. O Módulo 6
-começa pela credencial local; access tokens permanecem para a próxima aula.
+já possui credencial local e access token curto; sessões renováveis formam o
+próximo problema.

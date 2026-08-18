@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 6 / aula 01 concluída
+Estado: Módulo 6 / aula 02 concluída
 
-Última aula concluída: M06/A01
+Última aula concluída: M06/A02
 
 ## Fonte
 
@@ -26,7 +26,7 @@ Estado: Módulo 6 / aula 01 concluída
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 - Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
   iniciada antes da conclusão do planejamento e da importação.
-- M06/A01 e seu checkpoint executável concluídos.
+- M06/A01 e M06/A02, com seus checkpoints executáveis, concluídas.
 
 ## Conceitos incorporados
 
@@ -66,14 +66,17 @@ Estado: Módulo 6 / aula 01 concluída
 - Introduzidos em M06/A01: hash versus criptografia, Argon2id, salt, parâmetros
   de custo, `pwdlib`, hash fictício, enumeração temporal, normalização de
   identificador e execução CPU-bound em worker thread.
+- Introduzidos em M06/A02: JWT assinado versus criptografado, Bearer token,
+  algoritmo fixo, `typ`, `iss`, `aud`, `sub`, `iat`, `nbf`, `exp`, `jti`,
+  claims obrigatórias, chave simétrica validada e identidade derivada.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A01.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A02.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A01.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A02.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -117,6 +120,10 @@ Estado: Módulo 6 / aula 01 concluída
   `/auth/register`, persiste somente Argon2id e usa `/auth/login` para verificar
   senha com erro genérico. A revisão `0002` preserva usuários anteriores com
   `password_hash` nulo.
+- O checkpoint M06/A02 troca o sucesso vazio do login por um access JWT de 15
+  minutos. Algoritmo, tipo, emissor, audience, sujeito, datas e `jti` são
+  validados; `POST /loans` exige Bearer token e remove `user_id` da entrada.
+  A conta atual é revalidada dentro da transação, sem nova migração.
 
 ## Pendências
 
@@ -130,6 +137,6 @@ Estado: Módulo 6 / aula 01 concluída
 
 ## Próxima etapa
 
-Produzir M06/A02 emitindo access tokens curtos com algoritmo e claims
-verificados. A identidade autenticada deverá substituir `user_id` fornecido
-pelo cliente nas operações em que o usuário age em nome próprio.
+Produzir M06/A03 modelando sessões renováveis. O refresh token deverá ser
+rotativo, ter somente digest persistido, detectar reutilização e usar cookie
+com uma defesa CSRF coerente com o modelo de ameaça do navegador.
