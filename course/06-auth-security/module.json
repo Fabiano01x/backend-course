@@ -62,7 +62,7 @@
       "summary": "Autentique clientes de máquina com segredo exibido uma vez, hash, escopos e revogação.",
       "sources": ["source/module-06/05.md"],
       "checkpoint": "reference/checkpoints/module-06/lesson-06",
-      "status": "planned"
+      "status": "complete"
     }
   ]
 }

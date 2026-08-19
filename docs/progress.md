@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 6 / aula 05 concluída
+Estado: Módulo 6 concluído
 
-Última aula concluída: M06/A05
+Última aula concluída: M06/A06
 
 ## Fonte
 
@@ -26,7 +26,8 @@ Estado: Módulo 6 / aula 05 concluída
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 - Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
   iniciada antes da conclusão do planejamento e da importação.
-- M06/A01–A05, com seus checkpoints executáveis, concluídas.
+- M06/A01–A06, com seus checkpoints executáveis, concluídas.
+- Módulo 6 concluído e verificável a partir do Git.
 
 ## Conceitos incorporados
 
@@ -79,14 +80,17 @@ Estado: Módulo 6 / aula 05 concluída
 - Introduzidos em M06/A05: OIDC, Authorization Code, discovery, ID Token,
   issuer, subject, audience, nonce, state, PKCE S256, JWKS, RS256, tentativa
   vinculada ao navegador e vínculo externo sem auto-link por e-mail.
+- Introduzidos em M06/A06: identidade de máquina, API key opaca, prefixo
+  público, segredo exibido uma vez, digest, escopos, expiração, auditoria de
+  uso, rotação e revogação.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A05.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A06.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A05.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A06.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -149,6 +153,11 @@ Estado: Módulo 6 / aula 05 concluída
   vinculados ao cookie, discovery HTTPS e validação RS256/JWKS. Contas são
   encontradas por issuer/subject; e-mail verificado cria identidade nova, mas
   uma colisão local exige vínculo explícito e responde `409`.
+- O checkpoint M06/A06 adiciona `api_clients` e `api_keys` pela revisão
+  `0006`. Chaves `lka_` usam prefixo público, 256 bits aleatórios e somente
+  digest no banco; escopos separam exportações de livros e empréstimos.
+  Expiração, cliente ativo e revogação são consultados em cada chamada;
+  rotação cria a substituta e revoga a anterior atomicamente.
 
 ## Pendências
 
@@ -162,6 +171,6 @@ Estado: Módulo 6 / aula 05 concluída
 
 ## Próxima etapa
 
-Produzir M06/A06 adicionando chaves de API com identidade e ciclo de vida. Cada
-chave deverá ter prefixo público, segredo exibido uma vez, digest, escopos,
-expiração opcional, rotação e revogação auditáveis.
+Definir o plano do Módulo 7 antes de introduzir filas ou workers. O próximo
+problema deverá nascer de trabalho que não deve manter uma requisição HTTP
+aberta e preservar as fronteiras de identidade construídas no Módulo 6.

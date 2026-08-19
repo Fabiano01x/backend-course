@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M06/A05
+## Estado sequencial atual: checkpoint M06/A06
 
 ```text
 Cliente HTTP
@@ -76,6 +76,21 @@ FastAPI (app/main.py)
     |              valida RS256/JWKS + iss/aud/nonce
     |              resolve (issuer, subject)
     |              -> sessão access/refresh local
+    +--> api_keys.router --> POST /api-clients + librarian
+    |                    --> POST /api-clients/{id}/keys
+    |                    --> POST /api-keys/{id}/rotate
+    |                    --> DELETE /api-keys/{id}
+    |                              |
+    |                              v
+    |                    prefix + digest + scopes
+    |                    expiração + rotação/revogação
+    +--> integrations.router --> GET /integrations/books + books:read
+    |                         --> GET /integrations/loans + loans:read
+    |                              |
+    |                              v
+    |                    X-API-Key -> ApiClient atual
+    |                    FOR UPDATE OF api_keys
+    |                    compare_digest + last_used_at
     +--> users.router  --> GET /users... + librarian
     |                  --> GET /users/{id} + proprietário ou librarian
     |                               |
@@ -153,11 +168,12 @@ alembic upgrade head
 0001_library_schema -> 0002_user_password_hash
                         -> 0003_refresh_token_rotation
                         -> 0004_role_assignments
-                        -> 0005_oidc_identities -> PostgreSQL
+                        -> 0005_oidc_identities
+                        -> 0006_api_keys -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-06/lesson-05/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-06/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -298,6 +314,11 @@ catálogo; as contas permanecem preservadas.
 A revisão `0005_oidc_identities` cria vínculos externos duráveis e tentativas
 OIDC curtas. O downgrade remove essas duas tabelas e preserva contas, papéis,
 sessões renováveis e credenciais locais.
+
+A revisão `0006_api_keys` cria `api_clients` e `api_keys`. Cliente e
+credencial permanecem separados; a chave registra prefixo, digest, escopos
+JSON, expiração, revogação, último uso e substituta. O downgrade remove somente
+essas tabelas e preserva toda autenticação humana.
 
 ## Separação pedagógica
 

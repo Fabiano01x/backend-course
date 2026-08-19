@@ -402,3 +402,29 @@ concluídas.
 - A tentativa é consumida em transação curta, code/JWKS são tratados fora do
   banco e o vínculo é resolvido em uma segunda transação. A sessão resultante
   usa access JWT e refresh token locais já existentes.
+
+## Chaves de API e identidade de máquina
+
+- Introduzido: Módulo 6 / aula 6.
+- `ApiClient` identifica serviço, parceiro ou rotina; `ApiKey` representa uma
+  credencial desse cliente. Nenhuma entidade aponta para `users`.
+- O formato `lka_<prefix>_<secret>` combina marcador detectável, prefixo
+  público aleatório de 12 hexadecimais e bearer secret base64url de 256 bits.
+- O valor bruto aparece somente na emissão ou rotação. `api_keys` persiste
+  prefixo e SHA-256 da chave completa; entropia aleatória torna digest rápido
+  adequado aqui, enquanto senhas humanas continuam exigindo Argon2id.
+- A busca usa o prefixo e a confirmação usa `secrets.compare_digest`; ausência,
+  formato inválido, digest incorreto, expiração, revogação ou cliente inativo
+  produzem o mesmo `401` com `WWW-Authenticate: ApiKey`.
+- `books:read` e `loans:read` protegem rotas próprias em `/integrations`.
+  Credencial válida sem o escopo exigido recebe `403`.
+- Rotas de administração exigem `librarian` por access JWT. Chaves de máquina
+  não entram em rotas humanas, e JWT humano não substitui `X-API-Key`.
+- `expires_at`, `revoked_at`, `last_used_at` e `replaced_by_id` tornam o ciclo
+  observável. Rotação imediata cria a substituta e revoga a anterior na mesma
+  confirmação; emissão separada permite sobreposição operacional deliberada.
+- Autenticação bloqueia somente a linha de `api_keys`, carrega o cliente por
+  `INNER JOIN`, atualiza `last_used_at` e encerra a transação antes da leitura
+  de livros ou empréstimos.
+- API keys continuam sendo bearer secrets: nunca entram em URL ou logs e
+  exigem HTTPS. CORS é política de navegador, não proteção serviço-a-serviço.

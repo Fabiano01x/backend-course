@@ -484,3 +484,29 @@ consumo da tentativa, chamadas ao provedor e resolução do vínculo para não
 manter transação PostgreSQL durante rede externa. Depois da autenticação OIDC,
 a Library API emite seu access JWT e refresh token opaco locais; tokens do
 provedor não são persistidos.
+
+## ADR-034 — Cliente de máquina não é usuário e chave possui ciclo de vida
+
+**Decisão:** M06/A06 separa a identidade `ApiClient` de suas credenciais
+`ApiKey`. Não cria usuário técnico, senha ou sessão renovável para integração.
+Rotas administrativas usam o principal humano `librarian`; rotas de máquina
+ficam sob `/integrations` e aceitam somente `X-API-Key` com escopo explícito.
+
+A credencial tem formato `lka_<prefix>_<secret>`. O prefixo público aleatório
+permite localização e detecção; o segredo possui 256 bits e aparece apenas na
+resposta de emissão ou rotação. O banco guarda SHA-256 da chave completa e a
+verificação usa `compare_digest`, inclusive contra digest fictício quando não
+há linha. Todos os estados inválidos retornam `401`; escopo insuficiente após
+autenticação retorna `403`.
+
+`api_keys` registra JSON de escopos validados, expiração opcional, revogação,
+último uso e elo único de substituição. JSON é suficiente porque o conjunto é
+pequeno e não é consultado internamente no SQL; normalização fica adiada até
+existirem metadados ou consultas próprias para escopos.
+
+Rotação bloqueia somente a chave anterior, insere a substituta, liga
+`replaced_by_id` e revoga a antiga na mesma transação. A consulta usa
+`INNER JOIN` para o cliente obrigatório e `FOR UPDATE OF api_keys`, evitando
+lock no lado anulável de outer join. A autenticação atualiza `last_used_at` e
+confirma antes de executar a leitura de domínio. Produção exige HTTPS; CORS não
+é tratado como defesa de credenciais entre serviços.
