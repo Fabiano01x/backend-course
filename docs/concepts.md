@@ -293,8 +293,10 @@ concluídas.
   ausente, senha errada, usuário inativo, legado sem hash ou hash desconhecido.
 - Ausência de credencial ainda executa Argon2id contra `DUMMY_PASSWORD_HASH`,
   removendo o atalho temporal mais evidente para enumeração de contas.
-- Hash e verify são CPU-bound e executam por `run_in_threadpool`, fora do event
-  loop. Limites de entrada ocorrem antes desse trabalho.
+- Hash e verify são CPU-bound e executam fora do event loop. Desde M06/A04,
+  `run_password_operation` usa um `ThreadPoolExecutor` limitado e propaga o
+  resultado de forma compatível com o runtime Python 3.14 aprovado. Limites de
+  entrada ocorrem antes desse trabalho.
 
 ## Access tokens e identidade autenticada
 
@@ -349,3 +351,27 @@ concluídas.
   inseguros continuam sendo as defesas primárias contra XSS.
 - Logout e replay encerram renovação, mas access JWTs já emitidos permanecem
   válidos até no máximo sua expiração de 15 minutos.
+
+## Autorização por papéis e propriedade
+
+- Introduzido: Módulo 6 / aula 4.
+- Autenticação responde quem apresentou a requisição; autorização decide se
+  essa identidade pode executar a operação sobre o recurso.
+- Token ausente ou inválido, conta inexistente ou inativa produzem `401` com
+  `WWW-Authenticate: Bearer`. Identidade válida sem permissão produz `403` sem
+  novo desafio de autenticação.
+- `roles` mantém o catálogo e `user_roles` a atribuição muitos-para-muitos, com
+  PK composta. A revisão `0004` cadastra `member` e `librarian` e atribui
+  `member` aos usuários anteriores.
+- Novos cadastros criam sua atribuição `member` na mesma confirmação da conta.
+- O access JWT continua sem papéis. `AuthorizationRepository` consulta conta e
+  atribuições atuais em cada operação protegida, portanto remover `librarian`
+  invalida a permissão mesmo que o mesmo token continue dentro da validade.
+- `Principal` contém somente `user_id` e um `frozenset` de papéis atuais.
+  `LibrarianPrincipal` é uma dependência declarativa para CRUDs simples.
+- Retirada e devolução verificam `member` ou `librarian` dentro da fronteira
+  `session.begin()` existente, evitando iniciar outra transação implicitamente.
+- Acesso ao próprio `/users/{id}` é regra de propriedade. Acesso ao perfil de
+  outra pessoa e operações administrativas usam o papel global `librarian`.
+- A política atual nega por padrão: leitura do acervo é pública; escritas de
+  livros, listagens administrativas e devoluções exigem papel explícito.

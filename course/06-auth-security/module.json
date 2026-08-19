@@ -42,7 +42,7 @@
       "summary": "Modele papéis e diferencie identidade inválida, permissão insuficiente e regras de propriedade.",
       "sources": ["source/module-06/03.md"],
       "checkpoint": "reference/checkpoints/module-06/lesson-04",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 5,

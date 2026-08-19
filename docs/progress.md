@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 6 / aula 03 concluída
+Estado: Módulo 6 / aula 04 concluída
 
-Última aula concluída: M06/A03
+Última aula concluída: M06/A04
 
 ## Fonte
 
@@ -26,7 +26,7 @@ Estado: Módulo 6 / aula 03 concluída
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 - Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
   iniciada antes da conclusão do planejamento e da importação.
-- M06/A01–A03, com seus checkpoints executáveis, concluídas.
+- M06/A01–A04, com seus checkpoints executáveis, concluídas.
 
 ## Conceitos incorporados
 
@@ -73,14 +73,17 @@ Estado: Módulo 6 / aula 03 concluída
   aleatório, família, rotação de uso único, replay, revogação, validade
   absoluta, cookie `HttpOnly`, `Secure`, `SameSite`, CSRF, `Origin` e limites
   dessas defesas diante de XSS.
+- Introduzidos em M06/A04: AuthN versus AuthZ, RBAC muitos-para-muitos,
+  `Principal`, papéis atuais persistidos, menor privilégio, negação por padrão,
+  `401` versus `403`, dependências de autorização e regras de propriedade.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A03.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A04.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A03.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A04.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -133,6 +136,11 @@ Estado: Módulo 6 / aula 03 concluída
   o valor bruto em cookie restrito; refresh rotaciona sob lock; replay revoga a
   família; logout é idempotente. Header customizado, CORS e `Origin` protegem
   as operações por cookie contra CSRF.
+- O checkpoint M06/A04 adiciona `roles` e `user_roles` pela revisão `0004`,
+  atribui `member` a contas existentes e novas e consulta papéis atuais em cada
+  operação protegida. Escritas e visões administrativas exigem `librarian`;
+  detalhe próprio continua uma regra de propriedade. O mesmo JWT perde acesso
+  assim que a atribuição persistida é removida.
 
 ## Pendências
 
@@ -146,6 +154,6 @@ Estado: Módulo 6 / aula 03 concluída
 
 ## Próxima etapa
 
-Produzir M06/A04 adicionando autorização explícita com papéis persistidos. A
-API deverá consultar permissões atuais, diferenciar `401` de `403` e manter
-regras de propriedade separadas de papéis globais.
+Produzir M06/A05 integrando identidade externa com OpenID Connect. O fluxo
+deverá usar Authorization Code, `state`, `nonce`, validação de issuer, audience
+e assinatura, e vínculo estável por `(issuer, subject)`.

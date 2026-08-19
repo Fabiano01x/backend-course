@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M06/A03
+## Estado sequencial atual: checkpoint M06/A04
 
 ```text
 Cliente HTTP
@@ -33,11 +33,12 @@ FastAPI (app/main.py)
     |                                  v
     |                     Book + disponibilidade por NOT EXISTS
     |
-    +--> books.router  --> GET/POST/PUT/DELETE /books...
+    +--> books.router  --> GET /books... (público)
+    |                  --> POST/PUT/DELETE /books... + librarian atual
     +--> auth.router   --> POST /auth/register
     |                         |
     |                         v
-    |                    worker thread
+    |              pool limitado de worker threads
     |                         |
     |                         v
     |                  Argon2id -> password_hash
@@ -61,32 +62,32 @@ FastAPI (app/main.py)
     |                         |
     |                         v
     |                  revoga família + limpa cookie
-    +--> users.router  --> GET /users...
-    |                  --> GET /users/{id}
+    +--> users.router  --> GET /users... + librarian
+    |                  --> GET /users/{id} + proprietário ou librarian
     |                               |
     |                               v
     |                    selectinload(User.loans)
     |                    + joinedload(Loan.book)
     |                         2 statements
-    +--> loans.router  --> GET /loans
+    +--> loans.router  --> GET /loans + librarian
     |                  |      |
     |                  |      v
     |                  | joinedload(user + book): 1 statement
     |                  |
-    |                  --> POST /loans + Bearer token
+    |                  --> POST /loans + Bearer token + member atual
     |                  |      |
     |                  |      v
     |                  | CurrentIdentity(sub do JWT)
     |                  |      |
     |                  |      v
-    |                  --> POST /loans/{id}/return
+    |                  --> POST /loans/{id}/return + librarian atual
     |                         |
     |                         v
     |                    Loan service
     |               session.begin() boundary
     |                         |
     |                         v
-    |            usuário atual + regras + LoanRepository
+    |        papéis atuais + regras + LoanRepository
     |                SELECT ... FOR UPDATE + add/flush
     |                         |
     +-------------------------------+
@@ -136,11 +137,12 @@ alembic upgrade head
           |
           v
 0001_library_schema -> 0002_user_password_hash
-                        -> 0003_refresh_token_rotation -> PostgreSQL
+                        -> 0003_refresh_token_rotation
+                        -> 0004_role_assignments -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-06/lesson-03/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-04/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -161,8 +163,9 @@ Testes consultam `/openapi.json` para proteger esse contrato; Swagger UI e
 ReDoc apenas o apresentam de formas diferentes.
 
 `schema.sql` registra o desenho de dados. `app/models.py` traduz `users`,
-`books`, `loans` e `refresh_tokens` para metadata SQLAlchemy tipado, incluindo a
-entidade associativa `Loan` e a cadeia autorreferente da rotação. `app/database.py`
+`books`, `loans`, `refresh_tokens`, `roles` e `user_roles` para metadata
+SQLAlchemy tipado, incluindo as entidades associativas `Loan` e `UserRole` e a
+cadeia autorreferente da rotação. `app/database.py`
 cria a URL segura, a engine e a fábrica de sessões. A fábrica da aplicação aceita
 esse recurso por argumento, o guarda em `app.state` e liga seu startup e shutdown
 ao lifespan.
@@ -190,10 +193,11 @@ detalhe de usuário declara `selectinload(User.loans)` encadeado a
 `joinedload(Loan.book)` e usa dois statements fixos. Testes contam as consultas
 executadas e falham se esse orçamento ou a proibição de lazy loading regredir.
 
-`auth.router` concentra cadastro, login, refresh e logout. `POST /auth/register` normaliza
-o e-mail e desloca Argon2id para uma worker thread antes de persistir somente
-`password_hash`. `POST /auth/login` consulta o usuário, verifica a senha fora do
-event loop, emite um access JWT de 15 minutos e inicia uma família renovável.
+`auth.router` concentra cadastro, login, refresh e logout. `POST /auth/register`
+normaliza o e-mail, desloca Argon2id para um pool limitado de workers e persiste
+somente `password_hash`, junto da atribuição `member`. `POST /auth/login`
+consulta o usuário, verifica a senha fora do event loop, emite um access JWT de
+15 minutos e inicia uma família renovável.
 Conta ausente, senha errada,
 usuário inativo, conta legada e hash inválido produzem o mesmo `401`; os caminhos
 sem hash real usam `DUMMY_PASSWORD_HASH`.
@@ -204,10 +208,21 @@ issuer, audience estrita, sujeito, datas, UUID em `jti` e
 produção. Tokens não são criptografados e não carregam dados confidenciais.
 
 `get_current_identity` converte `Authorization: Bearer` em um sujeito validado
-sem consultar o banco. `POST /loans` remove `user_id` do corpo e passa esse
-sujeito ao service. A transação então consulta a conta atual, recusa ausência ou
-inatividade com `401` e usa o ID autenticado na FK. Essa ordem preserva a única
-fronteira `session.begin()` do caso de uso.
+sem consultar o banco. `get_current_principal` usa esse sujeito para consultar
+conta ativa e atribuições atuais; `require_librarian` transforma ausência do
+papel em `403`. O JWT não contém papéis e uma remoção no banco vale na próxima
+requisição mesmo com o mesmo token.
+
+`POST /loans` remove `user_id` do corpo e passa o sujeito ao service. Dentro do
+`session.begin()`, `AuthorizationRepository` recusa conta ausente ou inativa
+com `401`, exige `member` com `403` e só então aplica as regras do livro. A
+devolução exige `librarian` na mesma fronteira. Assim, autorização não abre uma
+transação implícita antes do caso de uso atômico.
+
+CRUDs de livro, listagem global de usuários e listagem de empréstimos recebem
+`LibrarianPrincipal`. `GET /users/{id}` compara o sujeito com o recurso: o
+próprio usuário pode ler seu perfil; outro perfil exige `librarian`. Papel
+organizacional e propriedade permanecem políticas distintas.
 
 Refresh tokens são valores opacos de 32 bytes aleatórios. Somente SHA-256 entra
 em `refresh_tokens`; o valor bruto é transportado em cookie host-only,
@@ -240,6 +255,11 @@ M06/A02 não altera o esquema. A revisão `0003_refresh_token_rotation` cria
 `refresh_tokens`, duas FKs, unicidade de digest/substituição, constraints
 temporais e índices por família e usuário. O downgrade remove somente essa
 tabela e preserva credenciais locais.
+
+A revisão `0004_role_assignments` cria o catálogo `roles`, a associação
+`user_roles` com chave composta, cadastra `member` e `librarian` e atribui
+`member` aos usuários anteriores. O downgrade remove somente a associação e o
+catálogo; as contas permanecem preservadas.
 
 ## Separação pedagógica
 
@@ -283,8 +303,10 @@ por aula. O processo não altera os Markdown nem a área do aluno.
 - Ainda não existem rate limit ou recuperação de senha.
 - O cookie `SameSite=Strict` pressupõe frontend same-site. Um deploy cross-site
   exige rever transporte, `SameSite=None; Secure` e as camadas CSRF.
-- Apenas a retirada usa a identidade atual. Listagem, devolução e administração
-  ganharão regras de permissão quando RBAC tornar essa necessidade explícita.
+- Papéis são consultados a cada operação protegida. Um cache futuro precisará
+  declarar sua janela de obsolescência e mecanismo de invalidação.
+- Elevação a `librarian` é uma operação administrativa fora da API pública; não
+  existe endpoint de autoelevação.
 
 ## Evolução concluída no Módulo 4
 
@@ -298,5 +320,6 @@ rotas modulares
 ```
 
 O Módulo 5 encerra com carregamento previsível de relacionamentos. O Módulo 6
-já possui credencial local, access token curto e sessão renovável rotativa;
-autorização por papéis forma o próximo problema.
+já possui credencial local, access token curto, sessão renovável rotativa e
+autorização atual por papel/propriedade; identidade externa via OpenID Connect
+forma o próximo problema.

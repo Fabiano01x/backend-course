@@ -418,3 +418,37 @@ sem sinks inseguros continuam responsabilidades explícitas.
 sempre limpa o cookie. Outras sessões do mesmo usuário não são punidas por um
 replay isolado. Access tokens emitidos antes da revogação continuam válidos por
 até 15 minutos; revogação instantânea não é prometida.
+
+## ADR-032 — Papéis atuais autorizam; propriedade continua contextual
+
+**Decisão:** M06/A04 cria `roles` e `user_roles` pela revisão
+`0004_role_assignments`. O catálogo inicial possui `member` e `librarian`; a
+migração atribui `member` às contas anteriores e `/auth/register` inclui a mesma
+atribuição para novas contas. Elevação a `librarian` não recebe endpoint público
+capaz de produzir autoelevação.
+
+O access JWT permanece uma credencial curta de identidade e não incorpora
+papéis. `AuthorizationRepository` consulta conta ativa e atribuições atuais em
+cada operação protegida. Assim, remover um papel passa a valer com o mesmo JWT;
+assinatura válida não transforma uma claim potencialmente obsoleta em fonte
+permanente. A consulta adicional é um custo deliberado nesta etapa; cache só
+poderá existir com política explícita de invalidação.
+
+`401` identifica falha da credencial ou da identidade atual e inclui o desafio
+Bearer. `403` identifica identidade válida sem permissão e não pede nova
+autenticação. Escritas de livros, listagens globais e devoluções exigem
+`librarian`; retirada exige `member`. O próprio detalhe de usuário usa
+propriedade, enquanto outro perfil exige o papel global. RBAC não é usado para
+disfarçar uma relação entre sujeito e objeto.
+
+Dependências declarativas protegem CRUDs que podem consultar e confirmar na
+mesma sessão. Retirada e devolução consultam a mesma fonte de autorização dentro
+do `session.begin()` já existente, preservando a fronteira atômica e evitando
+uma transação implícita anterior.
+
+Durante a validação com Python 3.14.6 e AnyIO 4.14.2, a ponte anterior de worker
+não propagou a conclusão do Argon2id no ambiente aprovado. O estado atual isola
+hash e verify em `run_password_operation`, com `ThreadPoolExecutor` limitado a
+quatro workers e espera assíncrona do `Future`. Parâmetros, formato e modelo de
+ameaça da senha não mudaram; teste dedicado comprova execução fora da thread do
+event loop.
