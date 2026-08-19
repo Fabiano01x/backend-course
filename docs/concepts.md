@@ -375,3 +375,30 @@ concluídas.
   outra pessoa e operações administrativas usam o papel global `librarian`.
 - A política atual nega por padrão: leitura do acervo é pública; escritas de
   livros, listagens administrativas e devoluções exigem papel explícito.
+
+## OpenID Connect e identidades externas
+
+- Introduzido: Módulo 6 / aula 5.
+- OAuth 2.0 delega acesso; OpenID Connect adiciona autenticação por meio de um
+  ID Token. Tokens do provedor não substituem as credenciais locais da API.
+- O fluxo usa Authorization Code, scope `openid email profile`, redirect URI
+  exata, `state`, `nonce` e PKCE S256 por tentativa.
+- `library_oidc_attempt` vincula browser secret e code verifier ao navegador
+  com `HttpOnly`, `SameSite=Lax`, `Path=/auth/oidc`, validade de dez minutos e
+  `Secure` em HTTPS/produção.
+- `oidc_login_attempts` persiste somente SHA-256 de browser secret, state,
+  nonce e verifier. O callback bloqueia a linha, confere expiração e marca uso
+  antes do I/O externo; replay é recusado.
+- O issuer vem de configuração e não do request. Discovery precisa devolver o
+  mesmo issuer, endpoints HTTPS, RS256 e suporte declarado a PKCE S256.
+- O ID Token exige assinatura RS256 por uma chave RSA única do JWKS, `iss`,
+  `sub`, `aud`, `exp`, `iat` e `nonce`; múltiplas audiences também exigem
+  `azp` igual ao client ID.
+- `external_identities` liga `users` pelo par único `(issuer, subject)`. E-mail
+  e nome são atributos, não identidade estável.
+- E-mail verificado pode criar uma conta externa nova, com `password_hash=NULL`
+  e papel `member`. E-mail já pertencente a conta local gera `409`; auto-link
+  é recusado até existir confirmação autenticada explícita.
+- A tentativa é consumida em transação curta, code/JWKS são tratados fora do
+  banco e o vínculo é resolvido em uma segunda transação. A sessão resultante
+  usa access JWT e refresh token locais já existentes.

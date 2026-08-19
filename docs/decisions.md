@@ -452,3 +452,35 @@ hash e verify em `run_password_operation`, com `ThreadPoolExecutor` limitado a
 quatro workers e espera assíncrona do `Future`. Parâmetros, formato e modelo de
 ameaça da senha não mudaram; teste dedicado comprova execução fora da thread do
 event loop.
+
+## ADR-033 — Identidade externa é OIDC e vínculo usa issuer/subject
+
+**Decisão:** M06/A05 implementa OpenID Connect Authorization Code em vez de
+tratar um access token OAuth 2.0 como prova genérica de identidade. O issuer é
+configuração do operador. Discovery precisa retornar esse mesmo valor e
+endpoints HTTPS; o cliente aceita apenas ID Tokens RS256 e seleciona uma chave
+RSA de assinatura por `kid` no JWKS.
+
+Cada tentativa gera `state`, `nonce`, browser secret e PKCE verifier. O browser
+recebe somente browser secret e verifier em cookie `HttpOnly`, `SameSite=Lax`,
+restrito a `/auth/oidc`; authorization request recebe state, nonce e challenge
+S256. `oidc_login_attempts` guarda somente digests, validade de dez minutos e
+`used_at`. Cookie e state precisam localizar a mesma linha bloqueada, e o
+verifier apresentado precisa corresponder ao digest. O consumo ocorre antes do
+I/O externo; falha exige uma tentativa nova.
+
+O ID Token exige assinatura, issuer, audience, datas, subject e nonce. Quando
+`aud` possui mais de um valor, `azp` deve ser o client ID configurado. Subject é
+o identificador durável e forma, com issuer, a unicidade de
+`external_identities`.
+
+E-mail verificado serve apenas para criar uma conta quando não existe vínculo.
+Uma colisão com conta local produz `409` e nunca auto-link; fundir identidades
+exige um fluxo futuro iniciado por uma conta local já autenticada. Contas novas
+de OIDC preservam `password_hash=NULL` e recebem `member` na mesma transação.
+
+A revisão `0005_oidc_identities` cria tentativas e vínculos. O callback separa
+consumo da tentativa, chamadas ao provedor e resolução do vínculo para não
+manter transação PostgreSQL durante rede externa. Depois da autenticação OIDC,
+a Library API emite seu access JWT e refresh token opaco locais; tokens do
+provedor não são persistidos.

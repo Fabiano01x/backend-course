@@ -1,6 +1,6 @@
 # Arquitetura da Library API
 
-## Estado sequencial atual: checkpoint M06/A04
+## Estado sequencial atual: checkpoint M06/A05
 
 ```text
 Cliente HTTP
@@ -62,6 +62,20 @@ FastAPI (app/main.py)
     |                         |
     |                         v
     |                  revoga família + limpa cookie
+    |                  --> GET /auth/oidc/login
+    |                         |
+    |                         v
+    |              state + nonce + PKCE + cookie curto
+    |                         |
+    |                         v
+    |                  provedor OIDC
+    |                         |
+    |                         v
+    |              GET /auth/oidc/callback
+    |              consome tentativa -> troca code
+    |              valida RS256/JWKS + iss/aud/nonce
+    |              resolve (issuer, subject)
+    |              -> sessão access/refresh local
     +--> users.router  --> GET /users... + librarian
     |                  --> GET /users/{id} + proprietário ou librarian
     |                               |
@@ -138,11 +152,12 @@ alembic upgrade head
           v
 0001_library_schema -> 0002_user_password_hash
                         -> 0003_refresh_token_rotation
-                        -> 0004_role_assignments -> PostgreSQL
+                        -> 0004_role_assignments
+                        -> 0005_oidc_identities -> PostgreSQL
 ```
 
 A implementação sequencial está em
-`reference/checkpoints/module-06/lesson-04/`. `app/main.py` cria a aplicação,
+`reference/checkpoints/module-06/lesson-05/`. `app/main.py` cria a aplicação,
 configura os middlewares e inclui os routers; cada módulo em `app/routers/`
 concentra um grupo de rotas.
 `schemas.py` declara os contratos. `data.py` foi removido. CRUDs simples
@@ -163,9 +178,10 @@ Testes consultam `/openapi.json` para proteger esse contrato; Swagger UI e
 ReDoc apenas o apresentam de formas diferentes.
 
 `schema.sql` registra o desenho de dados. `app/models.py` traduz `users`,
-`books`, `loans`, `refresh_tokens`, `roles` e `user_roles` para metadata
-SQLAlchemy tipado, incluindo as entidades associativas `Loan` e `UserRole` e a
-cadeia autorreferente da rotação. `app/database.py`
+`books`, `loans`, `refresh_tokens`, `roles`, `user_roles`,
+`external_identities` e `oidc_login_attempts` para metadata SQLAlchemy tipado,
+incluindo as entidades associativas `Loan` e `UserRole` e a cadeia
+autorreferente da rotação. `app/database.py`
 cria a URL segura, a engine e a fábrica de sessões. A fábrica da aplicação aceita
 esse recurso por argumento, o guarda em `app.state` e liga seu startup e shutdown
 ao lifespan.
@@ -240,6 +256,24 @@ de preflight e a origem deve ser a própria API ou pertencer à allowlist.
 confiável de emitir requisições. CORS e CSRF não são apresentados como defesa
 contra XSS.
 
+`oidc.router` oferece o redirect inicial e o callback. O issuer e o cliente vêm
+de configuração completa; sem ela, as rotas respondem `503`. A tentativa gera
+state, nonce, browser secret e PKCE verifier. O browser recebe os dois últimos
+em cookie `HttpOnly`, `SameSite=Lax`, restrito a `/auth/oidc`; o banco recebe
+somente digests, expiração e estado de uso.
+
+`HttpOidcProvider` lê discovery HTTPS, exige issuer idêntico, RS256 e PKCE S256,
+troca o code com `client_secret_basic` e valida o ID Token usando a chave RSA
+selecionada no JWKS. Issuer, audience, `azp` quando necessário, datas, subject e
+nonce pertencem à validação. Access/ID tokens externos não são persistidos.
+
+O callback consome a tentativa sob lock em uma transação curta, faz rede fora
+do banco e resolve a identidade em outra transação. `external_identities` usa o
+par único `(issuer, subject)`. E-mail verificado pode criar uma conta externa
+com `password_hash=NULL` e `member`; colisão com conta local produz `409` sem
+auto-link. O sucesso inicia a mesma sessão access/refresh local do login por
+senha.
+
 `alembic/env.py` reutiliza `Settings`, `build_database_url` e `Base.metadata`.
 Credenciais não ficam em `alembic.ini`. A baseline cria as três tabelas e suas
 invariantes; `alembic_version` registra a revisão aplicada. Migrações pertencem
@@ -260,6 +294,10 @@ A revisão `0004_role_assignments` cria o catálogo `roles`, a associação
 `user_roles` com chave composta, cadastra `member` e `librarian` e atribui
 `member` aos usuários anteriores. O downgrade remove somente a associação e o
 catálogo; as contas permanecem preservadas.
+
+A revisão `0005_oidc_identities` cria vínculos externos duráveis e tentativas
+OIDC curtas. O downgrade remove essas duas tabelas e preserva contas, papéis,
+sessões renováveis e credenciais locais.
 
 ## Separação pedagógica
 
@@ -307,6 +345,11 @@ por aula. O processo não altera os Markdown nem a área do aluno.
   declarar sua janela de obsolescência e mecanismo de invalidação.
 - Elevação a `librarian` é uma operação administrativa fora da API pública; não
   existe endpoint de autoelevação.
+- OIDC aceita um único issuer configurado. Adicionar provedores exigirá uma
+  allowlist de configurações independentes, nunca um issuer arbitrário vindo
+  do request.
+- Colisão de e-mail não liga contas automaticamente. O fluxo autenticado de
+  vínculo é um exercício explícito, não uma heurística no callback público.
 
 ## Evolução concluída no Módulo 4
 
@@ -320,6 +363,6 @@ rotas modulares
 ```
 
 O Módulo 5 encerra com carregamento previsível de relacionamentos. O Módulo 6
-já possui credencial local, access token curto, sessão renovável rotativa e
-autorização atual por papel/propriedade; identidade externa via OpenID Connect
-forma o próximo problema.
+já possui credencial local, access token curto, sessão renovável rotativa,
+autorização atual por papel/propriedade e identidade externa OIDC; credenciais
+de máquina com ciclo de vida formam o próximo problema.

@@ -52,7 +52,7 @@
       "summary": "Integre uma identidade externa com Authorization Code, state, nonce e vínculo estável por emissor e subject.",
       "sources": ["source/module-06/04.md"],
       "checkpoint": "reference/checkpoints/module-06/lesson-05",
-      "status": "planned"
+      "status": "complete"
     },
     {
       "number": 6,

@@ -1,8 +1,8 @@
 # Progresso
 
-Estado: Módulo 6 / aula 04 concluída
+Estado: Módulo 6 / aula 05 concluída
 
-Última aula concluída: M06/A04
+Última aula concluída: M06/A05
 
 ## Fonte
 
@@ -26,7 +26,7 @@ Estado: Módulo 6 / aula 04 concluída
 - Sequência autoral do Módulo 5 e seus sete checkpoints concluídos.
 - Sequência autoral do Módulo 6 definida em seis problemas; nenhuma aula foi
   iniciada antes da conclusão do planejamento e da importação.
-- M06/A01–A04, com seus checkpoints executáveis, concluídas.
+- M06/A01–A05, com seus checkpoints executáveis, concluídas.
 
 ## Conceitos incorporados
 
@@ -76,14 +76,17 @@ Estado: Módulo 6 / aula 04 concluída
 - Introduzidos em M06/A04: AuthN versus AuthZ, RBAC muitos-para-muitos,
   `Principal`, papéis atuais persistidos, menor privilégio, negação por padrão,
   `401` versus `403`, dependências de autorização e regras de propriedade.
+- Introduzidos em M06/A05: OIDC, Authorization Code, discovery, ID Token,
+  issuer, subject, audience, nonce, state, PKCE S256, JWKS, RS256, tentativa
+  vinculada ao navegador e vínculo externo sem auto-link por e-mail.
 
 ## Arquitetura atual
 
 - A solução piloto foi preservada em `reference/pilot/module-04/lesson-03/`.
-- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A04.
+- `main.py` expõe uma fábrica e compõe a aplicação do checkpoint M06/A05.
 - Livros, usuários, empréstimos e rotas operacionais possuem routers separados.
 - Livros e usuários usam persistência PostgreSQL; `app/data.py` foi removido.
-- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A04.
+- Ambiente resolvido registrado no `requirements.lock` do checkpoint M06/A05.
 - `student/library-api/` está reservado para a implementação manual do aluno.
 - O checkpoint sequencial 01 usa rotas diretas em `main.py` e dados somente de
   leitura em memória.
@@ -141,6 +144,11 @@ Estado: Módulo 6 / aula 04 concluída
   operação protegida. Escritas e visões administrativas exigem `librarian`;
   detalhe próprio continua uma regra de propriedade. O mesmo JWT perde acesso
   assim que a atribuição persistida é removida.
+- O checkpoint M06/A05 adiciona `oidc_login_attempts` e
+  `external_identities` pela revisão `0005`. O fluxo usa state/nonce/PKCE
+  vinculados ao cookie, discovery HTTPS e validação RS256/JWKS. Contas são
+  encontradas por issuer/subject; e-mail verificado cria identidade nova, mas
+  uma colisão local exige vínculo explícito e responde `409`.
 
 ## Pendências
 
@@ -154,6 +162,6 @@ Estado: Módulo 6 / aula 04 concluída
 
 ## Próxima etapa
 
-Produzir M06/A05 integrando identidade externa com OpenID Connect. O fluxo
-deverá usar Authorization Code, `state`, `nonce`, validação de issuer, audience
-e assinatura, e vínculo estável por `(issuer, subject)`.
+Produzir M06/A06 adicionando chaves de API com identidade e ciclo de vida. Cada
+chave deverá ter prefixo público, segredo exibido uma vez, digest, escopos,
+expiração opcional, rotação e revogação auditáveis.
